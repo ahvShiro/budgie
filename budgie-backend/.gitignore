@@ -42,3 +42,5 @@ secrets.yml
 .git-hooks/
 node_modules
 /.kotlin/
+src/main/resources/application-secrets
+src/main/resources/application-secrets.properties
