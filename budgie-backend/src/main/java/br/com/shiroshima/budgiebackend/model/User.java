@@ -1,6 +1,8 @@
 package br.com.shiroshima.budgiebackend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,16 +14,16 @@ import lombok.Data;
 @Data
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
-    private Long id;
+    private UUID id;
 
     @NotBlank
     @Size(min = 2, max = 25, message = "Username should have at least 2 characters and at mos 25 characters")
     private String username;
 
     @NotBlank
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min=8, message = "Password should have at least 8 characters")
     private String password;
 

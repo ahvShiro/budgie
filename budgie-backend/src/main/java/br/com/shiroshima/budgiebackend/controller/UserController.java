@@ -1,6 +1,7 @@
 package br.com.shiroshima.budgiebackend.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,14 +32,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> fetchUserById(@PathVariable Long id) {
-
+    public ResponseEntity<User> fetchUserById(@PathVariable UUID id) {
         try {
             return ResponseEntity.ok(service.fetchById(id));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-        
     }
 
     @PostMapping
@@ -46,10 +45,9 @@ public class UserController {
         var response = service.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeUser(@PathVariable Long id) {
+    public ResponseEntity<Void> removeUser(@PathVariable UUID id) {
         service.remove(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -58,5 +56,4 @@ public class UserController {
     public ResponseEntity<User> editUser(@RequestBody @Valid User user) {
         return ResponseEntity.ok(service.edit(user));
     }
-    
 }
