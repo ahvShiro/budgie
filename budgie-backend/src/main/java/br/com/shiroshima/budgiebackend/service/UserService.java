@@ -1,7 +1,6 @@
 package br.com.shiroshima.budgiebackend.service;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,17 +23,17 @@ public class UserService {
         return repo.findAll();
     }
 
-    public User fetchById(UUID id) {
+    public User fetchById(Long id) {
         return repo.findById(id).orElseThrow(() -> new RuntimeException("Id not found"));
     }
 
-    public void remove(UUID id) {
+    public void remove(Long id) {
         repo.deleteById(id);
     }
     
     public User edit(User user) {
         User prevUser = fetchById(user.getId());
-        prevUser.setUsername(user.getUsername());
+        prevUser.setName(user.getName());
 
         return repo.save(prevUser);
     }
