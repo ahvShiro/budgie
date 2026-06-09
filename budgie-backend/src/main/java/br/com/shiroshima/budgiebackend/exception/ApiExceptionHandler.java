@@ -1,10 +1,12 @@
 package br.com.shiroshima.budgiebackend.exception;
 
 import java.nio.file.AccessDeniedException;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -51,9 +53,11 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(Collectors.joining("; "));
+        
         ErrorMessage e = new ErrorMessage(
             HttpStatus.BAD_REQUEST, 
-            ex.getMessage()
+            message
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }
