@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import br.com.shiroshima.budgiebackend.model.enums.RoleWallet;
+import br.com.shiroshima.budgiebackend.model.enums.WalletRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -41,7 +41,7 @@ public class WalletMember {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private RoleWallet role;
+    private WalletRole role;
 
     @CreatedDate
     @Column(name = "created_at")
