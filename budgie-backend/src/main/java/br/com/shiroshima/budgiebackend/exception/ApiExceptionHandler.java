@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -67,6 +68,15 @@ public class ApiExceptionHandler {
         ErrorMessage e = new ErrorMessage(
             HttpStatus.CONFLICT, 
             ex.getMessage()
+        );
+        return ResponseEntity.status(e.getStatus()).body(e);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorMessage> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        ErrorMessage e = new ErrorMessage(
+            HttpStatus.BAD_REQUEST,     
+            "Preencha as informações e tente novamente"
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }
