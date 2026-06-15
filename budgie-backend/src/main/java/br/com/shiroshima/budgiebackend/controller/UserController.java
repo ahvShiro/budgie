@@ -18,7 +18,7 @@ import br.com.shiroshima.budgiebackend.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired
