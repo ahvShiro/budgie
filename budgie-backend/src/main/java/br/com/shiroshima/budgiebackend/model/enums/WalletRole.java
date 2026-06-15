@@ -1,5 +1,5 @@
 package br.com.shiroshima.budgiebackend.model.enums;
 
-public enum RoleWallet {
+public enum WalletRole {
     OWNER, EDITOR, VIEWER
 }
