@@ -40,18 +40,18 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Long id;
 
-    @NotBlank(message = "Name should not be blank")
-    @Size(min = 2, max = 64, message = "Name should have at least 2 characters and at mos 25 characters")
+    @NotBlank(message = "{name.required}")
+    @Size(min = 2, max = 64, message = "{name.minmax}")
     private String name;
 
-    @NotBlank(message = "Email should not be blank")
-    @Email(message = "Must be a valid email")
+    @NotBlank(message = "{email.required}")
+    @Email(message = "{email.valid}")
     @Column(unique = true)
     private String email;
 
-    @NotBlank(message = "Password should not be blank")
+    @NotBlank(message = "{password.required}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Size(min=8, message = "Password should have at least 8 characters")
+    @Size(min=8, message = "{password.min}")
     private String password;
 
     @Enumerated(EnumType.STRING)
