@@ -11,26 +11,36 @@ import br.com.shiroshima.budgiebackend.dto.UserResponseDTO;
 import br.com.shiroshima.budgiebackend.exception.BusinessException;
 import br.com.shiroshima.budgiebackend.model.User;
 import br.com.shiroshima.budgiebackend.model.enums.AuthRole;
-// import br.com.shiroshima.budgiebackend.model.dto.UserCreateDTO;
 import br.com.shiroshima.budgiebackend.repository.UserRepository;
 import jakarta.validation.Valid;
 
 @Service
 public class UserService {
-    
+
     @Autowired
     private UserRepository repo;
 
     public UserResponseDTO createUser(@Valid RegisterDTO data) {
-        if (repo.findByEmail(data.getEmail()) != null) throw new BusinessException("Usuário já existe");
-        if (!data.getPassword().equals(data.getPasswordConfirmation())) throw new BusinessException("Senha não corresponde com a confirmação");
+        if (repo.findByEmail(data.getEmail()) != null) {
+            throw new BusinessException("Usuário já existe");
+        }
+
+        if (!data.getPassword().equals(data.getPasswordConfirmation())) {
+            throw new BusinessException("Senha não corresponde com a confirmação");
+        }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
 
         User user = new User(data.getName(), data.getEmail(), encryptedPassword, AuthRole.USER);
         User responseUser = repo.save(user);
 
-        return new UserResponseDTO(responseUser.getId(), responseUser.getName(), responseUser.getEmail(), responseUser.getCreatedAt(), responseUser.getPassword());
+        return new UserResponseDTO(
+            responseUser.getId(), 
+            responseUser.getName(), 
+            responseUser.getEmail(),
+            responseUser.getCreatedAt(), 
+            responseUser.getPassword()
+        );
     }
 
     public List<User> listAll() {
@@ -44,7 +54,7 @@ public class UserService {
     public void remove(Long id) {
         repo.deleteById(id);
     }
-    
+
     public User edit(User user) {
         User prevUser = fetchById(user.getId());
         prevUser.setName(user.getName());
