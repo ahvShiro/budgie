@@ -38,8 +38,7 @@ public class UserService {
             responseUser.getId(), 
             responseUser.getName(), 
             responseUser.getEmail(),
-            responseUser.getCreatedAt(), 
-            responseUser.getPassword()
+            responseUser.getCreatedAt()        
         );
     }
 
