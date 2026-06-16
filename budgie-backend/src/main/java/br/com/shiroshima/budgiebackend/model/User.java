@@ -55,11 +55,7 @@ public class User implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
-    private WalletRole walletRole;
-
-    @Enumerated(EnumType.STRING)
-    @NotNull
+    // @NotNull
     private AuthRole authRole;
 
     @CreatedDate
