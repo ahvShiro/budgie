@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import br.com.shiroshima.budgiebackend.model.enums.AuthRole;
-import br.com.shiroshima.budgiebackend.model.enums.WalletRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -35,6 +34,14 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 @EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
+
+    public User(String name, String email, String password, AuthRole authRole) {
+        this.name = name;
+        this.email = email; 
+        this.password = password;
+        this.authRole = authRole;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -55,7 +62,7 @@ public class User implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    // @NotNull
+    @NotNull
     private AuthRole authRole;
 
     @CreatedDate
