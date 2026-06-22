@@ -3,30 +3,43 @@ package br.com.shiroshima.budgiebackend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.shiroshima.budgiebackend.dto.AuthDTO;
 import br.com.shiroshima.budgiebackend.dto.RegisterDTO;
 import br.com.shiroshima.budgiebackend.dto.UserResponseDTO;
+import br.com.shiroshima.budgiebackend.model.User;
+import br.com.shiroshima.budgiebackend.service.TokenService;
 import br.com.shiroshima.budgiebackend.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 public class AuthController {
     
     @Autowired
     private UserService service;
 
-    // @PostMapping("/login")
-    // public ResponseEntity<Void> login(@RequestBody @Valid AuthDTO data) {
-    //     // var userPassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
-    //     // var auth = this.authManager.authenticate(userPassword);
+    private final AuthenticationManager authManager;
+    private final TokenService tokenService;
 
-    //     return ResponseEntity.ok().build();
-    // }
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Valid AuthDTO authDTO) {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(authDTO.email(), authDTO.password());
+        var auth = this.authManager.authenticate(usernamePassword);
+
+        User user = (User) auth.getPrincipal();
+        var token = tokenService.generateToken(user);
+        
+        return ResponseEntity.ok().body(token);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid RegisterDTO data) {
