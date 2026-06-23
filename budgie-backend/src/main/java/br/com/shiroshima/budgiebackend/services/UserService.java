@@ -3,6 +3,7 @@ package br.com.shiroshima.budgiebackend.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -59,5 +60,17 @@ public class UserService {
         prevUser.setName(user.getName());
 
         return repo.save(prevUser);
+    }
+
+    public User getAuthenticatedUser() {
+        var context = SecurityContextHolder.getContext();
+        var authentication = context.getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Usuário não autenticado");
+        } 
+
+        return currentUser;
     }
 }
