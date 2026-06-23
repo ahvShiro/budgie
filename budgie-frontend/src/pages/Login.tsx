@@ -32,12 +32,15 @@ export function Login() {
             <Field>
               <div className="flex items-center">
                 <FieldLabel htmlFor="password">Password</FieldLabel>
-                <a
+                <FieldDescription className="ml-auto">
+                  <a
                   href="#"
-                  className="ml-auto text-sm underline-offset-4 hover:underline"
+                  className="text-sm hover:underline"
                 >
                   Esqueceu a senha?
                 </a>
+                </FieldDescription>
+                
               </div>
               <Input
                 type="password"
