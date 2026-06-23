@@ -1,11 +1,9 @@
-function App() {
+import { Login } from "./pages/Login";
 
+function App() {
   return (
-    <>
-      <h1>Budgie</h1>
-      <p>Controle financeiro</p>
-    </>
-  )
+    <Login />
+  );
 }
 
-export default App
+export default App;
