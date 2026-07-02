@@ -8,6 +8,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 export function Login() {
   return (
@@ -55,7 +56,7 @@ export function Login() {
               </Button>
 
               <FieldDescription className="text-center">
-                Não tem uma conta? <a href="#">Crie uma agora.</a>
+                Não tem uma conta? <Link to="/register">Crie uma agora.</Link>
               </FieldDescription>
             </Field>
           </FieldGroup>
