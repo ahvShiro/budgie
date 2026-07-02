@@ -1,3 +1,4 @@
+import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -8,8 +9,15 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export function Signin() {
+  const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
+
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
       <div className="w-full sm:max-w-md">
@@ -23,9 +31,11 @@ export function Signin() {
             <Field>
               <FieldLabel htmlFor="name">Nome</FieldLabel>
               <Input
-                type="name"
+                type="text"
                 id="name"
                 placeholder="Insira seu nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               ></Input>
             </Field>
 
@@ -35,6 +45,8 @@ export function Signin() {
                 type="email"
                 id="email"
                 placeholder="Insira seu email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               ></Input>
             </Field>
 
@@ -45,29 +57,22 @@ export function Signin() {
                 type="password"
                 id="password"
                 placeholder="Insira uma senha forte"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               ></Input>
 
-              <div className="space-y-1">
-                <div className="flex gap-1">
-                  <div className="h-1 flex-1 rounded-full transition-colors bg-gray-500"></div>
-                  <div className="h-1 flex-1 rounded-full transition-colors bg-gray-500"></div>
-                  <div className="h-1 flex-1 rounded-full transition-colors bg-gray-500"></div>
-                  <div className="h-1 flex-1 rounded-full transition-colors bg-gray-500"></div>
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  Insira uma senha
-                </p>
-              </div>
-
+              <PasswordStrengthMeter password={password} />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="password">Confirmação da senha</FieldLabel>
+              <FieldLabel htmlFor="passwordConfirmation">Confirmação da senha</FieldLabel>
 
               <Input
                 type="password"
-                id="password"
-                placeholder="Insira uma senha forte"
+                id="passwordConfirmation"
+                placeholder="Repita a senha"
+                value={passwordConfirmation}
+                onChange={(e) => setPasswordConfirmation(e.target.value)}
               ></Input>
             </Field>
 
@@ -77,7 +82,7 @@ export function Signin() {
               </Button>
 
               <FieldDescription className="text-center">
-                Já tem uma conta? <a href="#">Entrar agora.</a>
+                Já tem uma conta? <Link to="/login">Entrar agora.</Link>
               </FieldDescription>
             </Field>
           </FieldGroup>
