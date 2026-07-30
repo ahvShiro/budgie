@@ -14,9 +14,15 @@ import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.enums.AuthRole;
 import br.com.shiroshima.budgiebackend.repositories.UserRepository;
 import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
+import org.thymeleaf.context.Context;
 
 @Service
+@Validated
 public class UserService {
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private UserRepository repo;
@@ -34,6 +40,12 @@ public class UserService {
 
         User user = new User(data.getName(), data.getEmail(), encryptedPassword, AuthRole.USER);
         User responseUser = repo.save(user);
+
+        // emailService.sendEmail(user.getEmail(), "Success", "You got mail!!!");
+
+        Context context = new Context();
+        context.setVariable("name", user.getName());
+        emailService.sendEmailTemplate(user.getEmail(), "Urgente!!!!", "novoCadastro", context);
 
         return new UserResponseDTO(
             responseUser.getId(), 
