@@ -8,11 +8,12 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { SUPPORT_EMAIL } from "@/configs/env";
+import { buildSupportUrl } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export const PasswordRecover = () => {
-
   const [email, setEmail] = useState("");
 
   const handleClick = () => {
@@ -58,7 +59,15 @@ export const PasswordRecover = () => {
               </Button>
 
               <FieldDescription className="text-center">
-                Precisa de ajuda? <a href="mailto:arthurshiro123@gmail.com">Entre em contato com o suporte.</a>
+                Precisa de ajuda?{" "}
+                <a
+                  href={buildSupportUrl({
+                    email: SUPPORT_EMAIL,
+                    subject: "Budgie - Suporte com recuperação de senha",
+                  })}
+                >
+                  Entre em contato com o suporte.
+                </a>
               </FieldDescription>
             </Field>
           </FieldGroup>
