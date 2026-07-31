@@ -9,12 +9,20 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-
+import { toast } from "sonner";
 
 export const PasswordRecover = () => {
 
   const [email, setEmail] = useState("");
-  const [codeSent, setCodeSent] = useState(false);
+
+  const handleClick = () => {
+    // EMAIL SENDING STUFF HERE
+    toast.success("Email enviado!", {
+      description:
+        "Acesse o link no email para redefinir sua senha. Caso não tenha recebido, cheque a caixa de spam ou tente enviar novamente",
+      duration: 5000,
+    });
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
@@ -22,7 +30,9 @@ export const PasswordRecover = () => {
         <FieldSet>
           <FieldLegend>Redefinir senha</FieldLegend>
           <FieldDescription>
-            Insira o email utilizado para a criação da sua conta. Enviaremos um código de recuperação em seu email para que você possa alterar sua senha.
+            Insira o email utilizado para a criação da sua conta. Enviaremos um
+            código de recuperação em seu email para que você possa alterar sua
+            senha.
           </FieldDescription>
 
           <FieldGroup>
@@ -38,7 +48,12 @@ export const PasswordRecover = () => {
             </Field>
 
             <Field>
-              <Button type="submit" className="mt-4" disabled={email.length == 0}>
+              <Button
+                type="submit"
+                onClick={handleClick}
+                className="mt-4"
+                disabled={email.length == 0}
+              >
                 Enviar código de recuperação
               </Button>
 
