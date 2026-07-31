@@ -7,6 +7,7 @@ interface PasswordInputProps extends React.HTMLAttributes<HTMLInputElement> {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   id?: string;
+  name?: string;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export const PasswordInput = ({
   placeholder,
   className,
   onChange,
+  name,
   value,
 }: PasswordInputProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -45,6 +47,7 @@ export const PasswordInput = ({
         type={isPasswordVisible ? "text" : "password"}
         id={id}
         placeholder={placeholder}
+        name={name}
         value={value}
         onChange={onChange}
       />

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +27,12 @@ public class AuthController {
     
     @Autowired
     private UserService service;
+    
+    @Autowired
+    private AuthenticationManager authManager;
 
-    private final AuthenticationManager authManager;
-    private final TokenService tokenService;
+    @Autowired
+    private TokenService tokenService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid AuthDTO authDTO) {
@@ -41,6 +45,7 @@ public class AuthController {
         return ResponseEntity.ok().body(token);
     }
 
+    @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid RegisterDTO data) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createUser(data));
