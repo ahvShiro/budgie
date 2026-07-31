@@ -34,12 +34,7 @@ export function Login() {
               <div className="flex items-center">
                 <FieldLabel htmlFor="password">Password</FieldLabel>
                 <FieldDescription className="ml-auto">
-                  <a
-                  href="#"
-                  className="text-sm hover:underline"
-                >
-                  Esqueceu a senha?
-                </a>
+                   <Link to="/recuperar-senha">Esqueceu a senha?</Link>
                 </FieldDescription>
                 
               </div>
