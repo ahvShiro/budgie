@@ -1,3 +1,4 @@
+import { PasswordInput } from "@/components/PasswordInput";
 import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,19 +54,20 @@ export function Signin() {
             <Field>
               <FieldLabel htmlFor="password">Senha</FieldLabel>
 
-              <Input
-                type="password"
-                id="password"
-                placeholder="Insira uma senha forte"
+              <PasswordInput
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              ></Input>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setPassword(e.target.value);
+                }}
+              />
 
               <PasswordStrengthMeter password={password} />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="passwordConfirmation">Confirmação da senha</FieldLabel>
+              <FieldLabel htmlFor="passwordConfirmation">
+                Confirmação da senha
+              </FieldLabel>
 
               <Input
                 type="password"
