@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Signin } from "./pages/Signin/Signin";
-import { Login } from "./pages/Login";
+import { Login } from "./pages/Login/Login";
 import { PasswordRecover } from "./pages/PasswordRecover";
 import { PasswordReset } from "./pages/PasswordReset";
 import { Toaster } from "sonner";
