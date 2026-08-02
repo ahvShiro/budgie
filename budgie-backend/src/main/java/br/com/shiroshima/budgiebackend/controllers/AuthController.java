@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.shiroshima.budgiebackend.dtos.AuthDTO;
-import br.com.shiroshima.budgiebackend.dtos.RegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.services.TokenService;
@@ -42,7 +42,7 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid RegisterDTO data) {
+    public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRegisterDTO data) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createUser(data));
     }
 

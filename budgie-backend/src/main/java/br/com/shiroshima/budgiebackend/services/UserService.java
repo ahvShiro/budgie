@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.shiroshima.budgiebackend.dtos.RegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
 import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
 import br.com.shiroshima.budgiebackend.models.User;
@@ -27,18 +27,18 @@ public class UserService {
     @Autowired
     private UserRepository repo;
 
-    public UserResponseDTO createUser(@Valid RegisterDTO data) {
-        if (repo.findByEmail(data.getEmail()) != null) {
+    public UserResponseDTO createUser(@Valid UserRegisterDTO data) {
+        if (repo.findByEmail(data.email()) != null) {
             throw new BusinessException("Usuário já existe");
         }
 
-        if (!data.getPassword().equals(data.getPasswordConfirmation())) {
+        if (!data.password().equals(data.passwordConfirmation())) {
             throw new BusinessException("Senha não corresponde com a confirmação");
         }
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
+        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
 
-        User user = new User(data.getName(), data.getEmail(), encryptedPassword, AuthRole.USER);
+        User user = new User(data.name(), data.email(), encryptedPassword, AuthRole.USER);
         User responseUser = repo.save(user);
 
         // emailService.sendEmail(user.getEmail(), "Success", "You got mail!!!");
