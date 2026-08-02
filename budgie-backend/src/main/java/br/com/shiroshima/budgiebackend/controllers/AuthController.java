@@ -25,14 +25,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
     
-    @Autowired
-    private UserService service;
-    
-    @Autowired
-    private AuthenticationManager authManager;
-
-    @Autowired
-    private TokenService tokenService;
+    private final UserService service;
+    private final AuthenticationManager authManager;
+    private final TokenService tokenService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid AuthDTO authDTO) {
