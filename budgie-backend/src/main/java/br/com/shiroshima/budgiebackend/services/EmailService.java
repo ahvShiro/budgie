@@ -1,6 +1,5 @@
 package br.com.shiroshima.budgiebackend.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,11 +16,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Autowired
-    private TemplateEngine templateEngine;
+    private final JavaMailSender javaMailSender;
+    private final TemplateEngine templateEngine;
 
     @Async
     public void sendEmail(String to, String subject, String content) {
