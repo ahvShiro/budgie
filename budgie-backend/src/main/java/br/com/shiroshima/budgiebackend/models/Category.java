@@ -35,18 +35,18 @@ public class Category {
     @NotNull
     private User user;
 
-    @NotBlank
+    @NotBlank(message = "{name.required}")
     private String name;
 
     @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    @Pattern(regexp = "^[0-9a-fA-F]*$", message = "Must be a valid hexadeximal value")
-    @Size(max = 6, message = "Color code should have 6 characters")
+    @Pattern(regexp = "^[0-9a-fA-F]*$", message = "{color.shouldvalid}")
+    @Size(max = 6, message = "{color.shouldmax}")
     private String color;
 
-    @URL(message = "Must be a valid URL")
+    @URL(message = "{icon.shouldvalid}")
     private String icon;
 
     @Column(name = "is_active")
