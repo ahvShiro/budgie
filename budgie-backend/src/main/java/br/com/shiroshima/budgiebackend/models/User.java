@@ -47,12 +47,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Long id;
 
-    @NotBlank(message = "{name.required}")
-    @Size(min = 2, max = 64, message = "{name.minmax}")
+    @NotBlank(message = "{name.shouldrequired}")
+    @Size(min = 2, max = 64, message = "{name.shouldminmax}")
     private String name;
 
-    @NotBlank(message = "{email.required}")
-    @Email(message = "{email.valid}")
+    @NotBlank(message = "{email.shouldrequired}")
+    @Email(message = "{email.shouldvalid}")
     @Column(unique = true)
     private String email;
 
