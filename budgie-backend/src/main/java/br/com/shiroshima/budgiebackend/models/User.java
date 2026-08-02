@@ -56,9 +56,8 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
 
-    @NotBlank(message = "{password.required}")
+    @NotBlank(message = "{password.shouldrequired}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Size(min=8, message = "{password.min}")
     private String password;
 
     @Enumerated(EnumType.STRING)
