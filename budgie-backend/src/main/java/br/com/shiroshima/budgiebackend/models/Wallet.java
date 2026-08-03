@@ -54,11 +54,11 @@ public class Wallet {
     @NotNull
     private User owner;
 
-    @NotBlank
-    @Size(min = 2, max = 64, message = "Wallet name must have at least 2 and at most 64 characters")
+    @NotBlank(message = "{name.shouldrequired}")
+    @Size(min = 2, max = 64, message = "{name.shouldminmax}")
     private String name;
-    
-    @Size(max = 128, message = "Wallet description must have at most 128 characters")
+
+    @Size(max = 128, message = "{description.shouldmax}")
     private String description;
 
     @CreatedDate
@@ -66,14 +66,8 @@ public class Wallet {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
     private List<WalletMember> members;
-    
+
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
     private List<Transaction> transactions;
 }
-
-/*
-Você pode adicionar moeda, saldo inicial, cor etc.
-*/
