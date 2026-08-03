@@ -36,8 +36,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getCategories(@RequestParam(required = false) TransactionType transactionType) {        
-        return ResponseEntity.ok(service.getCategories(transactionType));
+    public ResponseEntity<List<CategoryResponseDTO>> getCategories(@RequestParam(required = false) TransactionType type) {        
+        return ResponseEntity.ok(service.getCategories(type));
     }
 
     @PutMapping("/{id}")
