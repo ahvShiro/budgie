@@ -7,6 +7,9 @@ import org.springframework.validation.annotation.Validated;
 
 import br.com.shiroshima.budgiebackend.dtos.CategoryRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.CategoryResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.CategoryUpdateDTO;
+import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
+import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.CategoryMapper;
 import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
@@ -23,62 +26,55 @@ public class CategoryService {
     private final CategoryMapper mapper;
     private final UserService userService;
 
+    // Métodos internos
+
+    public List<Category> fetchCategories(TransactionType type) {
+        if (type == null) return repo.findAll();
+        return repo.findByTransactionTypeAndActive(type, true);
+    } 
+
+    public Category fetchById(Long id) {
+        return repo.findByIdAndActive(id, true).orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+    }
+
+    public void deleteCategory(Category category) {
+        repo.delete(category);
+    }
+
+    // Métodos externos
+
     public CategoryResponseDTO registerCategory(@Valid CategoryRegisterDTO data) {
         Category newCategory = mapper.toEntity(data, userService.fetchById(data.userId()));
         repo.save(newCategory);
         return mapper.toResponse(newCategory);
     }
 
-    /*
-ERRO: Não acho legal estourar esse erro pro usuário em uma mensagem de erro, então daria pra colocar um erro generico
-{
-	"userId": 20,
-	"name": "Salário",
-	"transactionType": "INCOME",
-	"color": "FFFFFF",
-	"icon": "https://picsum.photos/50/50"
-}
-
-{
-    "status": 409,
-    "message": "could not execute statement [Field 'title' doesn't have a default value] [insert into categories (color,icon,is_active,name,transaction_type,user_id) values (?,?,?,?,?,?)]; SQL [insert into categories (color,icon,is_active,name,transaction_type,user_id) values (?,?,?,?,?,?)]; constraint [title]",
-    "error": "Conflict",
-    "timestamp": "2026-08-02T18:33:11.315554879"
-}
-
-==============
-
-ERRO: transactionType minusculo não está contando. Por mim deixava esse BO pro frontend tratar, já que o usuário não iria digitar o enum na mão, masss sla
-
-{
-	"userId": 1,
-	"name": "Teste",
-	"transactionType": "income",
-	"color": "FFFFFF",
-	"icon": "https://picsum.photos/50/50"
-}
-{
-	"status": 400,
-	"message": "Preencha as informações e tente novamente",
-	"error": "Bad Request",
-	"timestamp": "2026-08-02T18:38:12.005088192"
-}
-
-
-    TODO TRATAR ESSES ERROS
-    */
-
-    // TODO FAZER FILTRO FILTRAR
-    public List<Category> fetchCategories(TransactionType type) {
-        if (type == null) return repo.findAll();
-        return repo.findByTransactionType(type);
-    } 
-
     public List<CategoryResponseDTO> getCategories(TransactionType type) {
+        // Filtrar por categorias do usuário
         return fetchCategories(type)
         .stream()
         .map(obj -> mapper.toResponse(obj))
         .toList();
-    } 
+    }
+
+    public CategoryResponseDTO updateCategory(Long id, @Valid CategoryUpdateDTO data) {
+        Category old = fetchById(id);
+
+        // Validar se categoria pertence ao usuario autenticado qdo autenticação for implementada 100%
+
+        mapper.updateEntity(old, data);
+        repo.save(old);
+        return mapper.toResponse(old);
+    }
+
+    public void removeCategory(Long id) {
+        Category cat = fetchById(id);
+        
+        // if (/* CONDIÇÃO */) {
+        //     throw new BusinessException("Não foi possível excluir pois existem transações com esta categoria");
+        // }
+
+        deleteCategory(cat);
+    }
 
 }

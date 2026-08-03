@@ -67,6 +67,6 @@ public class Category {
     @URL(message = "{icon.shouldvalid}")
     private String icon;
 
-    @Column(name = "is_active")
-    private boolean isActive = true;
+    @Column(name = "active")
+    private boolean active = true;
 }
