@@ -2,6 +2,7 @@ package br.com.shiroshima.budgiebackend.services;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,7 +21,10 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
-
+    
+    @Value("${support}")
+    private String supportUrl;
+    
     @Async
     public void sendEmail(String to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -33,6 +37,20 @@ public class EmailService {
     @Async
     public void sendNewSigninEmail(String to, String name) {
         sendEmailTemplate(to, "Novo Cadastro - Budgie", "novoCadastro", Map.of("name", name));
+    }
+
+    @Async
+    public void sendPasswordRecoveryURLEmail(String to, String name, String recoveryUrl) {
+        sendEmailTemplate(
+            to, 
+            "Recuperação de Senha - Budgie", 
+            "recuperarSenha", 
+            Map.of(
+                "name", name, 
+                "url", recoveryUrl, 
+                "supportUrl", supportUrl
+            )
+        );
     }
 
     private void sendEmailTemplate(String to, String subject, String template, Map<String, Object> variables) {
