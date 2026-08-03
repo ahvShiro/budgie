@@ -73,8 +73,8 @@ public class AuthController {
     Erros: 400 se token inválido, expirado ou já utilizado.
     */
     @PostMapping("/reset-password")
-    public ResponseEntity<MessageDTO> resetPassword(@RequestBody @Valid PasswordTokenDTO data) {
+    public ResponseEntity<MessageDTO> resetPassword(@RequestBody PasswordTokenDTO data) {
         authService.resetPassword(data);
-        return ResponseEntity.ok(new MessageDTO("Senha redefinida com sucesso."));
+        return ResponseEntity.ok(null);
     }
 }
