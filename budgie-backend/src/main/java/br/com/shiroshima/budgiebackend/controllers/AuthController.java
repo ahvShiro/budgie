@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.shiroshima.budgiebackend.dtos.AuthDTO;
 import br.com.shiroshima.budgiebackend.dtos.AuthResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.EmailDTO;
+import br.com.shiroshima.budgiebackend.dtos.MessageDTO;
+import br.com.shiroshima.budgiebackend.dtos.PasswordTokenDTO;
 import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
 import br.com.shiroshima.budgiebackend.models.User;
+import br.com.shiroshima.budgiebackend.services.AuthService;
 import br.com.shiroshima.budgiebackend.services.TokenService;
 import br.com.shiroshima.budgiebackend.services.UserService;
 import jakarta.validation.Valid;
@@ -26,9 +30,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
     
-    private final UserService service;
+    private final UserService userService;
     private final AuthenticationManager authManager;
     private final TokenService tokenService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthDTO authDTO) {
@@ -44,7 +49,7 @@ public class AuthController {
     @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRegisterDTO data) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.registerUser(data));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(data));
     }
 
     /*
@@ -52,13 +57,12 @@ public class AuthController {
     Request body: { "email": "joao@email.com" }
     Response 200 OK: Sempre retorna a mesma mensagem neutra, independente de o e-mail existir:
     { "message": "Se este e-mail estiver cadastrado, você receberá as instruções em breve." }
-    O backend deve gerar um token único, salvá-lo em PasswordResetToken com expiração de 1 hora, e — como não há envio real de e-mail — apenas retornar o token no corpo da resposta para fins de teste:
-    { "message": "...", "debugToken": "abc123" }
-    Em produção, o debugToken jamais seria retornado. É um facilitador apenas para os testes da atividade.
+
     */
     @PostMapping("/forgot-password")
-    public ResponseEntity<Void> forgotPassword() {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<MessageDTO> forgotPassword(@RequestBody EmailDTO data) {
+        authService.passwordRecovery(data);
+        return ResponseEntity.ok(new MessageDTO("Se este e-mail estiver cadastrado, você receberá as instruções em breve."));
     }
 
     /* 
@@ -69,7 +73,8 @@ public class AuthController {
     Erros: 400 se token inválido, expirado ou já utilizado.
     */
     @PostMapping("/reset-password")
-    public ResponseEntity<Void> resetPassword() {
+    public ResponseEntity<MessageDTO> resetPassword(@RequestBody PasswordTokenDTO data) {
+        authService.resetPassword(data);
         return ResponseEntity.ok(null);
     }
 }
