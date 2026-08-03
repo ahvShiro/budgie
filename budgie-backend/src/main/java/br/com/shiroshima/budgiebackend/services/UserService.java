@@ -1,6 +1,7 @@
 package br.com.shiroshima.budgiebackend.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +40,10 @@ public class UserService {
         return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
 
+    public Optional<User> fetchByEmail(String email) {
+        return repo.findByEmail(email);
+    }
+
     public User fetchAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -56,7 +61,7 @@ public class UserService {
     // Métodos externos
 
     public UserResponseDTO registerUser(@Valid UserRegisterDTO data) {
-        if (repo.findByEmail(data.email()) != null) {
+        if (repo.findByEmail(data.email()).isPresent()) {
             throw new BusinessException("Usuário já existe");
         }
 
