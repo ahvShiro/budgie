@@ -54,6 +54,11 @@ public class UserService {
         return (User) authentication.getPrincipal();
     }
 
+    public void updatePassword(User user, String rawPassword) {
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        repo.save(user);
+    }
+
     public void deleteUser(User user) {
         repo.delete(user);
     }
@@ -107,8 +112,7 @@ public class UserService {
             throw new BusinessException("Senha não corresponde com a confirmação");
         }
 
-        current.setPassword(passwordEncoder.encode(data.newPassword()));
-        repo.save(current);
+        updatePassword(current, data.newPassword());
     }
 
     public void removeUser(Long id) {
