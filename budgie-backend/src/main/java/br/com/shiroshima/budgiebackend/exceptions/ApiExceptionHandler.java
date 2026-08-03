@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.access.AccessDeniedException;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,7 +32,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ErrorMessage e = new ErrorMessage(
-            HttpStatus.INTERNAL_SERVER_ERROR, 
+            HttpStatus.NOT_FOUND, 
             "Recurso não encontrado"
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
@@ -48,10 +49,11 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorMessage> handleConstraintViolationException(ConstraintViolationException ex) {
-        ErrorMessage e = new ErrorMessage(
-            HttpStatus.FORBIDDEN, 
-            "Acesso negado. Verifique se está autenticado e tente novamente"
-        );
+        String message = ex.getConstraintViolations().stream()
+            .map(ConstraintViolation::getMessage)
+            .collect(Collectors.joining("; "));
+
+        ErrorMessage e = new ErrorMessage(HttpStatus.BAD_REQUEST, message);
         return ResponseEntity.status(e.getStatus()).body(e);
     }
 
@@ -88,7 +90,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         ErrorMessage e = new ErrorMessage(
             HttpStatus.BAD_REQUEST,     
-            "Preencha as informações e tente novamente"
+            "Verifique as informações e tente novamente"
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }
