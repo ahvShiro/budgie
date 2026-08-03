@@ -49,6 +49,15 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(e.getStatus()).body(e);
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorMessage> handleInvalidTokenException(InvalidTokenException ex) {
+        ErrorMessage e = new ErrorMessage(
+            HttpStatus.BAD_REQUEST,
+            ex.getMessage()
+        );
+        return ResponseEntity.status(e.getStatus()).body(e);
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorMessage> handleConstraintViolationException(ConstraintViolationException ex) {
         String message = ex.getConstraintViolations().stream()
