@@ -12,7 +12,7 @@ public record CategoryRegisterDTO(
     @NotNull 
     Long userId,
 
-    @NotBlank(message = "{name.required}") 
+    @NotBlank(message = "{name.shouldrequired}") 
     String name,
 
     @NotNull

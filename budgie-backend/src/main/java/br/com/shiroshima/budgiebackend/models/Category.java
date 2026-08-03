@@ -52,7 +52,7 @@ public class Category {
     @NotNull
     private User user;
 
-    @NotBlank(message = "{name.required}")
+    @NotBlank(message = "{name.shouldrequired}")
     private String name;
 
     @Column(name = "transaction_type")

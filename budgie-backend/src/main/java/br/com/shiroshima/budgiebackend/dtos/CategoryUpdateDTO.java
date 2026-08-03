@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record CategoryUpdateDTO (
-    @NotBlank(message = "{name.required}")
+    @NotBlank(message = "{name.shouldrequired}")
     String name,
 
     @NotNull
