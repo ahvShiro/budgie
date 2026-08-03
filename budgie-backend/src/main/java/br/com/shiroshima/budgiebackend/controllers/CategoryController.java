@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.shiroshima.budgiebackend.dtos.CategoryRegisterDTO;
-import br.com.shiroshima.budgiebackend.dtos.CategoryResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.CategoryUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryRegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryUpdateDTO;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 import br.com.shiroshima.budgiebackend.services.CategoryService;
 import jakarta.validation.Valid;

@@ -1,4 +1,4 @@
-package br.com.shiroshima.budgiebackend.dtos;
+package br.com.shiroshima.budgiebackend.dtos.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

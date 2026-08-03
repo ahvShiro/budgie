@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.shiroshima.budgiebackend.dtos.UserPasswordUpdateDTO;
-
-import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.passwordRecover.UserPasswordUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserUpdateDTO;
 import br.com.shiroshima.budgiebackend.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

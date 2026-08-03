@@ -1,4 +1,4 @@
-package br.com.shiroshima.budgiebackend.dtos;
+package br.com.shiroshima.budgiebackend.dtos.user;
 
 import java.time.LocalDateTime;
 

@@ -8,10 +8,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.shiroshima.budgiebackend.dtos.UserPasswordUpdateDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.passwordRecover.UserPasswordUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserRegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.UserMapper;

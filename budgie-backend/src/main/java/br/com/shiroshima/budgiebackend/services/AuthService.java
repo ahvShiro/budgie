@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import br.com.shiroshima.budgiebackend.dtos.EmailDTO;
-import br.com.shiroshima.budgiebackend.dtos.PasswordTokenDTO;
+import br.com.shiroshima.budgiebackend.dtos.passwordRecover.EmailDTO;
+import br.com.shiroshima.budgiebackend.dtos.passwordRecover.PasswordTokenDTO;
 import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
 import br.com.shiroshima.budgiebackend.exceptions.InvalidTokenException;
 import br.com.shiroshima.budgiebackend.models.PasswordRedefinitionToken;

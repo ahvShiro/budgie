@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import br.com.shiroshima.budgiebackend.dtos.CategoryRegisterDTO;
-import br.com.shiroshima.budgiebackend.dtos.CategoryResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.CategoryUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryRegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.CategoryMapper;
 import br.com.shiroshima.budgiebackend.models.Category;

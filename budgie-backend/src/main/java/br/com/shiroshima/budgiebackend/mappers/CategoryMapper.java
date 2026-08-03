@@ -2,9 +2,9 @@ package br.com.shiroshima.budgiebackend.mappers;
 
 import org.springframework.stereotype.Component;
 
-import br.com.shiroshima.budgiebackend.dtos.CategoryRegisterDTO;
-import br.com.shiroshima.budgiebackend.dtos.CategoryResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.CategoryUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryRegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.category.CategoryUpdateDTO;
 import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.User;
 

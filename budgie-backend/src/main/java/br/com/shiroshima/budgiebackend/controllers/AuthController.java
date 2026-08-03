@@ -1,6 +1,5 @@
 package br.com.shiroshima.budgiebackend.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.shiroshima.budgiebackend.dtos.AuthDTO;
-import br.com.shiroshima.budgiebackend.dtos.AuthResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.EmailDTO;
-import br.com.shiroshima.budgiebackend.dtos.MessageDTO;
-import br.com.shiroshima.budgiebackend.dtos.PasswordTokenDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.auth.AuthDTO;
+import br.com.shiroshima.budgiebackend.dtos.auth.AuthResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.passwordRecover.EmailDTO;
+import br.com.shiroshima.budgiebackend.dtos.passwordRecover.MessageDTO;
+import br.com.shiroshima.budgiebackend.dtos.passwordRecover.PasswordTokenDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserRegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserResponseDTO;
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.services.AuthService;
 import br.com.shiroshima.budgiebackend.services.TokenService;

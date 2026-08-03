@@ -1,4 +1,4 @@
-package br.com.shiroshima.budgiebackend.dtos;
+package br.com.shiroshima.budgiebackend.dtos.category;
 
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 

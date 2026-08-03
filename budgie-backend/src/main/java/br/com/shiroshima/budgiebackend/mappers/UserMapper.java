@@ -2,9 +2,9 @@ package br.com.shiroshima.budgiebackend.mappers;
 
 import org.springframework.stereotype.Component;
 
-import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.UserUpdateDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserRegisterDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.user.UserUpdateDTO;
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.enums.AuthRole;
 
