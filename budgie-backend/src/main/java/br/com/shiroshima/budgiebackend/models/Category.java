@@ -18,12 +18,29 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name="categories")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Category {
+
+    public Category(User user, String name, TransactionType transactionType, String color, String icon)
+    {
+        this.user = user;
+        this.name = name; 
+        this.transactionType = transactionType;
+        this.color = color;
+        this.icon = icon;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +63,7 @@ public class Category {
     @Size(max = 6, message = "{color.shouldmax}")
     private String color;
 
+    // Penso em mudar para um enum com icones predefinidos qdo o frontend estiver montado
     @URL(message = "{icon.shouldvalid}")
     private String icon;
 
