@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagem</title>
+</head>
+<body>
+    <h1>Recuperação de senha</h1>
+    <p>Olá, <span th:text="${name}"></span></p>
+    <p>Recebemos uma requisição de alteração de senha para sua conta em nossa plataforma. Acesse a página de recuperação de senha pelo botão abaixo.</p>
+    <p>Caso não reconheça esta alteração, recomendamos que verifique a segurança da sua conta ou entre em contato com o nosso suporte.</p>
+
+    <a th:href="${url}" class="link-button">Recuperar senha</a>
+    <a th:href="${supportUrl}" class="link-button">Contatar suporte</a>
+</body>
+</html>
