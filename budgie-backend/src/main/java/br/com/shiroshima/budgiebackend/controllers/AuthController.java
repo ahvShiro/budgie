@@ -60,7 +60,7 @@ public class AuthController {
 
     */
     @PostMapping("/forgot-password")
-    public ResponseEntity<MessageDTO> forgotPassword(@RequestBody EmailDTO data) {
+    public ResponseEntity<MessageDTO> forgotPassword(@RequestBody @Valid EmailDTO data) {
         authService.passwordRecovery(data);
         return ResponseEntity.ok(new MessageDTO("Se este e-mail estiver cadastrado, você receberá as instruções em breve."));
     }
@@ -73,8 +73,8 @@ public class AuthController {
     Erros: 400 se token inválido, expirado ou já utilizado.
     */
     @PostMapping("/reset-password")
-    public ResponseEntity<MessageDTO> resetPassword(@RequestBody PasswordTokenDTO data) {
+    public ResponseEntity<MessageDTO> resetPassword(@RequestBody @Valid PasswordTokenDTO data) {
         authService.resetPassword(data);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(new MessageDTO("Senha redefinida com sucesso."));
     }
 }
