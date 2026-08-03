@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.shiroshima.budgiebackend.dtos.AuthDTO;
+import br.com.shiroshima.budgiebackend.dtos.AuthResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
 import br.com.shiroshima.budgiebackend.models.User;
@@ -30,14 +31,14 @@ public class AuthController {
     private final TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid AuthDTO authDTO) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthDTO authDTO) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authDTO.email(), authDTO.password());
         var auth = this.authManager.authenticate(usernamePassword);
 
         User user = (User) auth.getPrincipal();
         var token = tokenService.generateToken(user);
         
-        return ResponseEntity.ok().body(token);
+        return ResponseEntity.ok(new AuthResponseDTO(token));
     }
 
     @CrossOrigin

@@ -2,6 +2,8 @@ package br.com.shiroshima.budgiebackend.exceptions;
 
 import java.util.stream.Collectors;
 
+import javax.naming.AuthenticationException;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -94,5 +96,15 @@ public class ApiExceptionHandler {
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorMessage> handleAuthenticationException(AuthenticationException ex) {
+        ErrorMessage e = new ErrorMessage(
+            HttpStatus.UNAUTHORIZED,
+            "E-mail ou senha inválidos"
+        );
+        return ResponseEntity.status(e.getStatus()).body(e);
+    }
+
 
 }
