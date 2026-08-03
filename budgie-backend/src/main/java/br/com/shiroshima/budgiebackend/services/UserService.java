@@ -2,7 +2,6 @@ package br.com.shiroshima.budgiebackend.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.validation.annotation.Validated;
-import org.thymeleaf.context.Context;
 
 @Service
 @Validated
@@ -42,11 +40,7 @@ public class UserService {
         User user = new User(data.name(), data.email(), encryptedPassword, AuthRole.USER);
         User responseUser = repo.save(user);
 
-        // emailService.sendEmail(user.getEmail(), "Success", "You got mail!!!");
-
-        Context context = new Context();
-        context.setVariable("name", user.getName());
-        emailService.sendEmailTemplate(user.getEmail(), "Novo Cadastro - Budgie", "novoCadastro", context);
+        emailService.sendNewSigninEmail(user.getEmail(), user.getName());
 
         return new UserResponseDTO(
             responseUser.getId(), 

@@ -1,5 +1,7 @@
 package br.com.shiroshima.budgiebackend.services;
 
+import java.util.Map;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -29,19 +31,26 @@ public class EmailService {
     }
 
     @Async
-    public void sendEmailTemplate(String to, String subject, String template, Context context) {
+    public void sendNewSigninEmail(String to, String name) {
+        sendEmailTemplate(to, "Novo Cadastro - Budgie", "novoCadastro", Map.of("name", name));
+    }
+
+    private void sendEmailTemplate(String to, String subject, String template, Map<String, Object> variables) {
+        Context context = new Context();
+        context.setVariables(variables);
+
         String templateString = templateEngine.process(template, context);
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper;
+
         try {
             helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(templateString, true);
+            javaMailSender.send(message);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            System.err.println("ERRO ao enviar mensagem");
         }
-        javaMailSender.send(message);
     }
-
 }
