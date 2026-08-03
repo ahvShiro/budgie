@@ -1,4 +1,10 @@
 package br.com.shiroshima.budgiebackend.dtos;
 
-public record EmailDTO(String email) {
-}
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record EmailDTO(
+    @NotBlank(message = "{email.shouldrequired}")
+    @Email(message = "{email.shouldvalid}")
+    String email
+) {}
