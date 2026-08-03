@@ -1,6 +1,5 @@
 package br.com.shiroshima.budgiebackend.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -10,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.services.UserService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService service;
-
+    private final UserService service;
 
     // Retorna dados do usuário autenticado
     @GetMapping("/me")

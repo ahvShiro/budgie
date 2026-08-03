@@ -14,18 +14,18 @@ import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.enums.AuthRole;
 import br.com.shiroshima.budgiebackend.repositories.UserRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.validation.annotation.Validated;
 import org.thymeleaf.context.Context;
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private UserRepository repo;
+    private final EmailService emailService;
+    private final UserRepository repo;
 
     public UserResponseDTO createUser(@Valid UserRegisterDTO data) {
         if (repo.findByEmail(data.email()) != null) {
@@ -45,7 +45,7 @@ public class UserService {
 
         Context context = new Context();
         context.setVariable("name", user.getName());
-        emailService.sendEmailTemplate(user.getEmail(), "Urgente!!!!", "novoCadastro", context);
+        emailService.sendEmailTemplate(user.getEmail(), "Novo Cadastro - Budgie", "novoCadastro", context);
 
         return new UserResponseDTO(
             responseUser.getId(), 
@@ -60,7 +60,7 @@ public class UserService {
     }
 
     public User fetchById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new RuntimeException("Id not found"));
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("Id not found")); // TODO COLOCAR EXCECAO CORRESPONDENTE
     }
 
     public void remove(Long id) {
