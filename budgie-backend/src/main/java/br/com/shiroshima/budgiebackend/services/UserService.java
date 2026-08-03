@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import br.com.shiroshima.budgiebackend.dtos.UserRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
 import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
+import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.enums.AuthRole;
 import br.com.shiroshima.budgiebackend.repositories.UserRepository;
@@ -60,7 +61,7 @@ public class UserService {
     }
 
     public User fetchById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new RuntimeException("Id not found")); // TODO COLOCAR EXCECAO CORRESPONDENTE
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id not found"));
     }
 
     public void remove(Long id) {
