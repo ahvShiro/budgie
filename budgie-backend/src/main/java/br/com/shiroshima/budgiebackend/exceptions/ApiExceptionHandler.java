@@ -1,6 +1,5 @@
 package br.com.shiroshima.budgiebackend.exceptions;
 
-import java.nio.file.AccessDeniedException;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
+
+import jakarta.validation.ConstraintViolationException;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -29,9 +32,9 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ErrorMessage e = new ErrorMessage(
             HttpStatus.INTERNAL_SERVER_ERROR, 
-            "Erro inesperado! Contate o administrador"
+            "Recurso não encontrado"
         );
-        return ResponseEntity.status(e.getStatus()).body(e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
     }
 
     @ExceptionHandler(BusinessException.class)
@@ -39,6 +42,15 @@ public class ApiExceptionHandler {
         ErrorMessage e = new ErrorMessage(
             HttpStatus.UNPROCESSABLE_CONTENT, 
             ex.getMessage()
+        );
+        return ResponseEntity.status(e.getStatus()).body(e);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorMessage> handleConstraintViolationException(ConstraintViolationException ex) {
+        ErrorMessage e = new ErrorMessage(
+            HttpStatus.FORBIDDEN, 
+            "Acesso negado. Verifique se está autenticado e tente novamente"
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }
