@@ -41,11 +41,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/actuator/health").permitAll()
 
                 // Acesso a usuários autenticados
-                .requestMatchers("/api/v1/users/me").authenticated()
-
-                // Acesso apenas como admin: gestão
-                .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole("ADMIN")
-                
+                .requestMatchers("/api/v1/users/me", "/api/v1/users/me/**").authenticated()
+                                
                 // Acesso ao restante apenas autenticado
                 .anyRequest().authenticated()
             )
