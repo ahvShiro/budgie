@@ -23,10 +23,38 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final EmailService emailService;
     private final UserRepository repo;
+    private final UserMapper mapper;
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserResponseDTO createUser(@Valid UserRegisterDTO data) {
+    // Métodos internos
+
+    public List<User> fetchUsers() {
+        return repo.findAll();
+    }
+
+    public User fetchById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+    }
+
+    public User fetchAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new BusinessException("Usuário não autenticado");
+        }
+
+        return (User) authentication.getPrincipal();
+    }
+
+    public void deleteUser(User user) {
+        repo.delete(user);
+    }
+
+    // Métodos externos
+
+    public UserResponseDTO registerUser(@Valid UserRegisterDTO data) {
         if (repo.findByEmail(data.email()) != null) {
             throw new BusinessException("Usuário já existe");
         }
@@ -35,38 +63,31 @@ public class UserService {
             throw new BusinessException("Senha não corresponde com a confirmação");
         }
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
+        User newUser = mapper.toEntity(data, passwordEncoder.encode(data.password()));
+        repo.save(newUser);
 
-        User user = new User(data.name(), data.email(), encryptedPassword, AuthRole.USER);
-        User responseUser = repo.save(user);
+        emailService.sendNewSigninEmail(newUser.getEmail(), newUser.getName());
 
-        emailService.sendNewSigninEmail(user.getEmail(), user.getName());
-
-        return new UserResponseDTO(
-            responseUser.getId(), 
-            responseUser.getName(), 
-            responseUser.getEmail(),
-            responseUser.getCreatedAt()        
-        );
+        return mapper.toResponse(newUser);
     }
 
-    public List<User> listAll() {
-        return repo.findAll();
+    public List<UserResponseDTO> getUsers() {
+        return fetchUsers()
+        .stream()
+        .map(obj -> mapper.toResponse(obj))
+        .toList();
     }
 
-    public User fetchById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id not found"));
+    public UserResponseDTO getCurrentUser() {
+        return mapper.toResponse(fetchAuthenticatedUser());
     }
 
-    public void remove(Long id) {
-        repo.deleteById(id);
-    }
+    public UserResponseDTO updateCurrentUser(@Valid UserUpdateDTO data) {
+        User current = fetchAuthenticatedUser();
 
-    public User edit(User user) {
-        User prevUser = fetchById(user.getId());
-        prevUser.setName(user.getName());
-
-        return repo.save(prevUser);
+        mapper.updateEntity(current, data);
+        repo.save(current);
+        return mapper.toResponse(current);
     }
 
     public User getAuthenticatedUser() {

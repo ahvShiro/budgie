@@ -44,7 +44,7 @@ public class AuthController {
     @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRegisterDTO data) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createUser(data));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.registerUser(data));
     }
 
     /*

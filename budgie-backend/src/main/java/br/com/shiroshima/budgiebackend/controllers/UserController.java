@@ -4,11 +4,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.shiroshima.budgiebackend.models.User;
+import br.com.shiroshima.budgiebackend.dtos.UserResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.UserUpdateDTO;
 import br.com.shiroshima.budgiebackend.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,18 +23,14 @@ public class UserController {
 
     // Retorna dados do usuário autenticado
     @GetMapping("/me")
-    public ResponseEntity<User> fetchCurrentUser() {
-        try {
-            return ResponseEntity.ok(service.getAuthenticatedUser());
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UserResponseDTO> getCurrentUser() {
+        return ResponseEntity.ok(service.getCurrentUser());
     }
 
     // Atualiza nome (e outros campos opcionais)
     @PutMapping("/me")
-    public ResponseEntity<Void> editCurrentUser() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserResponseDTO> updateCurrentUser(@Valid @RequestBody UserUpdateDTO data) {
+        return ResponseEntity.ok(service.updateCurrentUser(data));
     }
 
     // Altera a senha (exige senha atual)
