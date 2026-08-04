@@ -9,13 +9,16 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { Fields } from "./types";
 import axios from "axios";
 import { toast } from "sonner";
+import AuthService from "@/services/AuthService";
+import { session } from "@/services/session";
 
 export const Login = () => {
-  const [fields, setFields] = useState<Fields>({});
+  const [fields, setFields] = useState<Fields>({email: "", password: ""});
+  const navigate = useNavigate();
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setFields({ ...fields, [e.target.name]: e.target.value });
@@ -25,7 +28,18 @@ export const Login = () => {
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     try {
-      toast.success("Olá, nome!", {description: "Logado com sucesso"});
+      
+      const { token } = await AuthService.authenticate({
+        email: fields.email,
+        password: fields.password
+      });
+
+      session.setToken(token);
+
+      toast.success("Usuário autenticado com sucesso!");
+
+      navigate("/app/dashboard");
+      
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         toast.error(err.response.data.message);

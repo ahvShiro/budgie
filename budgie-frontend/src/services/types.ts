@@ -5,6 +5,15 @@ export interface RegisterDTO {
   passwordConfirmation: string;
 }
 
+export interface AuthDTO {
+  email: string; 
+  password: string;
+}
+
+export interface ApiAuthResponseDTO {
+  token: string;
+}
+
 export interface ApiUserResponseDTO {
   id: number; 
   name: string;
