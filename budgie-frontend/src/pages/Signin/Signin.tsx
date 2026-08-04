@@ -12,12 +12,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import AuthService from "@/services/AuthService";
+import type { ApiErrorMessage } from "@/services/types";
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { validate } from "./Signin.validation";
-import type { FieldErrors, Fields } from "./types";
+import { validate, validateField } from "./Signin.validation";
+import type { FieldErrors, FieldName, Fields } from "./types";
 
 export const Signin = () => {
   const [fields, setFields] = useState<Fields>({});
@@ -25,36 +26,33 @@ export const Signin = () => {
 
   const navigate = useNavigate();
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFields({ ...fields, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFields((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
 
-    console.log(fields);
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const name = e.target.name as FieldName;
+    setFieldErrors((prev) => ({ ...prev, [name]: validateField(name, fields) }));
   };
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
+    const result = validate(fields);
+
+    if (!result.ok) {
+      setFieldErrors(result.errors);
+      return;
+    }
+
     try {
-      const errors: FieldErrors = validate(fields);
-
-      if (Object.keys(errors).length > 0) {
-        setFieldErrors(errors);
-        return;
-      }
-
-      const user = await AuthService.register({
-        name: fields.name ?? "",
-        email: fields.email ?? "",
-        password: fields.password ?? "",
-        passwordConfirmation: fields.passwordConfirmation ?? "",
-      });
-
-      console.log(user);
-
+      await AuthService.register(result.data);
       toast.success("Conta criada com sucesso!");
       navigate("/login");
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
+      if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
         toast.error(err.response.data.message);
       } else {
         toast.error("Erro inesperado");
@@ -81,6 +79,7 @@ export const Signin = () => {
                   value={fields.name ?? ""}
                   name="name"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 ></Input>
                 <FieldError
                   errors={
@@ -97,6 +96,7 @@ export const Signin = () => {
                   placeholder="Insira seu email"
                   value={fields.email ?? ""}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 ></Input>
                 <FieldError
                   errors={
@@ -109,6 +109,7 @@ export const Signin = () => {
                 <PasswordInput
                   value={fields.password ?? ""}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   name="password"
                 />
                 <FieldError
@@ -128,6 +129,7 @@ export const Signin = () => {
                 <PasswordInput
                   value={fields.passwordConfirmation ?? ""}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   name="passwordConfirmation"
                 />
                 <FieldError
