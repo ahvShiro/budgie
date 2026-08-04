@@ -36,9 +36,43 @@ export interface ApiUserResponseDTO {
 }
 
 export interface ApiErrorMessage {
-  timestamp: string; 
-  status: number; 
-  error: string; 
+  timestamp: string;
+  status: number;
+  error: string;
   message: string;
+}
+
+export type TransactionType = "INCOME" | "EXPENSE";
+
+export interface ApiTransactionResponseDTO {
+  id: number;
+  walletId: number;
+  categoryId: number | null;
+  type: TransactionType;
+  value: number;
+  description: string;
+  date: string; 
+  createdAt: string;
+}
+
+export interface ApiCategorySummaryDTO {
+  categoryId: number;
+  categoryName: string;
+  total: number;
+}
+
+export interface ApiMonthSummaryDTO {
+  month: string; // "2026-08"
+  income: number;
+  expense: number;
+}
+
+export interface ApiWalletSummaryDTO {
+  totalIncome: number;
+  totalExpense: number;
+  balance: number;
+  transactionCount: number;
+  byCategory: ApiCategorySummaryDTO[];
+  byMonth: ApiMonthSummaryDTO[];
 }
 
