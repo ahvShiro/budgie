@@ -32,11 +32,6 @@ const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
     setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const handleBlur = () => {
-    const result = signinSchema.safeParse(fields);
-    setFieldErrors(result.success ? {} : toFieldErrors<Fields>(result.error));
-  };
-
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
@@ -95,7 +90,6 @@ const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
                   placeholder="Insira seu email"
                   value={fields.email}
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 ></Input>
                 <FieldError
                   errors={
@@ -108,7 +102,6 @@ const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
                 <PasswordInput
                   value={fields.password}
                   onChange={handleChange}
-                  onBlur={handleBlur}
                   name="password"
                 />
                 <FieldError
@@ -128,7 +121,6 @@ const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
                 <PasswordInput
                   value={fields.passwordConfirmation}
                   onChange={handleChange}
-                  onBlur={handleBlur}
                   name="passwordConfirmation"
                 />
                 <FieldError
