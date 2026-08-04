@@ -15,6 +15,7 @@ import AuthService from "@/services/AuthService";
 import type { ApiErrorMessage } from "@/services/types";
 import axios from "axios";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -65,7 +66,7 @@ export const PasswordRecover = () => {
             <FieldDescription>
               Insira o email utilizado para a criação da sua conta. Enviaremos um
               código de recuperação em seu email para que você possa alterar sua
-              senha.
+              senha. Lembrou sua senha? <Link to="/login">Entrar na sua conta.</Link>
             </FieldDescription>
 
             <FieldGroup>
