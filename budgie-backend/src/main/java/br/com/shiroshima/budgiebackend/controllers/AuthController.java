@@ -74,6 +74,6 @@ public class AuthController {
     @PostMapping("/reset-password")
     public ResponseEntity<MessageDTO> resetPassword(@RequestBody PasswordTokenDTO data) {
         authService.resetPassword(data);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(new MessageDTO("Senha redefinida com sucesso"));
     }
 }
