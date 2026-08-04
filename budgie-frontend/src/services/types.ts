@@ -10,6 +10,14 @@ export interface AuthDTO {
   password: string;
 }
 
+export interface EmailDTO {
+  email: string;
+}
+
+export interface ApiMessageDTO {
+  message: string;
+}
+
 export interface ApiAuthResponseDTO {
   token: string;
 }

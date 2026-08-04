@@ -1,5 +1,5 @@
 import api from "@/configs/axiosConfig";
-import type { ApiAuthResponseDTO, ApiUserResponseDTO, AuthDTO, RegisterDTO } from "@/services/types";
+import type { ApiAuthResponseDTO, ApiMessageDTO, ApiUserResponseDTO, AuthDTO, EmailDTO, RegisterDTO } from "@/services/types";
 
 class AuthService {
   private endpoint: string = "/api/v1/auth";
@@ -14,8 +14,11 @@ class AuthService {
     return response.data;
   }
 
-  async recoverPassword() {
+  async recoverPassword(data: EmailDTO) {
+    const response = await api.post<ApiMessageDTO>(`${this.endpoint}/forgot-password`, data);
+    return response.data;
   }
+
   async resetPassword() {}
 }
 
