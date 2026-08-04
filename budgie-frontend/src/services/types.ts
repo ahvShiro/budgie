@@ -14,6 +14,12 @@ export interface EmailDTO {
   email: string;
 }
 
+export interface ResetPasswordDTO {
+  token: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}
+
 export interface ApiMessageDTO {
   message: string;
 }
