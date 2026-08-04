@@ -6,6 +6,8 @@ import { PasswordReset } from "./pages/PasswordReset/PasswordReset";
 import { Toaster } from "sonner";
 import { NotFound } from "./pages/NotFound/NotFound";
 import { Suporte } from "./pages/Suporte/Suporte";
+import { Dashboard } from "./pages/Dashboard/Dashboard";
+import { AppLayout } from "./components/AppLayout";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { PublicRoute } from "./components/PublicRoute";
 import { session } from "./services/session";
@@ -32,8 +34,10 @@ function App() {
             <Route path="/suporte" element={<Suporte />} />
 
             <Route element={<PrivateRoute />}>
-              <Route path="/app/dashboard" element={<div><p>Oiii</p></div>} />
-              <Route path="/app/perfil/senha" element={<div />} />
+              <Route element={<AppLayout />}>
+                <Route path="/app/dashboard" element={<Dashboard />} />
+                <Route path="/app/perfil/senha" element={<div />} />
+              </Route>
             </Route>
 
             <Route path="*" element={<NotFound />} />
