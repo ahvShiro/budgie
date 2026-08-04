@@ -2,9 +2,6 @@ import { Button } from "@/components/ui/button";
 import { SUPPORT_EMAIL } from "@/configs/env";
 import { useNavigate } from "react-router-dom";
 
-const SUPPORT_PHONE_DISPLAY = "00 98765-4321";
-const SUPPORT_PHONE_DIAL = "0098765432";
-
 export const Suporte = () => {
   const navigate = useNavigate();
 

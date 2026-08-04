@@ -11,7 +11,6 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
-import { SUPPORT_EMAIL } from "@/configs/env";
 import { toFieldErrors, type FieldErrors } from "@/lib/validationErrors";
 import AuthService from "@/services/AuthService";
 import type { ApiErrorMessage } from "@/services/types";

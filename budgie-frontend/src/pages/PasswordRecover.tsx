@@ -9,7 +9,6 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { SUPPORT_EMAIL } from "@/configs/env";
 import AuthService from "@/services/AuthService";
 import type { ApiErrorMessage } from "@/services/types";
 import axios from "axios";
