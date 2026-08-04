@@ -12,13 +12,12 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { SUPPORT_EMAIL } from "@/configs/env";
-import { buildSupportUrl } from "@/lib/utils";
 import { toFieldErrors, type FieldErrors } from "@/lib/validationErrors";
 import AuthService from "@/services/AuthService";
 import type { ApiErrorMessage } from "@/services/types";
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   initialValues,
@@ -124,14 +123,9 @@ export const PasswordReset = () => {
 
                 <FieldDescription className="text-center">
                   Precisa de ajuda?{" "}
-                  <a
-                    href={buildSupportUrl({
-                      email: SUPPORT_EMAIL,
-                      subject: "Budgie - Suporte com redefinição de senha",
-                    })}
-                  >
-                    Entre em contato com o suporte.
-                  </a>
+                <Link to="/suporte">
+                  Entre em contato com o suporte.
+                </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

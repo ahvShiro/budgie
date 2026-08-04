@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { SUPPORT_EMAIL } from "@/configs/env";
-import { buildSupportUrl } from "@/lib/utils";
 import AuthService from "@/services/AuthService";
 import type { ApiErrorMessage } from "@/services/types";
 import axios from "axios";
@@ -93,14 +92,9 @@ export const PasswordRecover = () => {
 
                 <FieldDescription className="text-center">
                   Precisa de ajuda?{" "}
-                  <a
-                    href={buildSupportUrl({
-                      email: SUPPORT_EMAIL,
-                      subject: "Budgie - Suporte com recuperação de senha",
-                    })}
-                  >
+                  <Link to="/suporte">
                     Entre em contato com o suporte.
-                  </a>
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

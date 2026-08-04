@@ -5,6 +5,7 @@ import { PasswordRecover } from "./pages/PasswordRecover";
 import { PasswordReset } from "./pages/PasswordReset/PasswordReset";
 import { Toaster } from "sonner";
 import { NotFound } from "./pages/NotFound/NotFound";
+import { Suporte } from "./pages/Suporte/Suporte";
 import { session } from "./services/session";
 
 function App() {
@@ -25,7 +26,7 @@ function App() {
             <Route path="/redefinir-senha/:token?" element={<PasswordReset />} />
             <Route path="/app/perfil/senha" element={<div />} />
             <Route path="/app/dashboard" element={<div><p>Oiii</p></div>} />
-            <Route path="/suporte" element={<div><p>Oiii</p></div>} />
+            <Route path="/suporte" element={<Suporte />} />
             <Route path="*" element={<NotFound />} />
         </Routes>
     </BrowserRouter>
