@@ -17,12 +17,12 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { validate, validateField } from "./Signin.validation";
-import type { FieldErrors, FieldName, Fields } from "./types";
+import { initialValues, signinSchema, type Fields } from "./Signin.validation";
+import { toFieldErrors, type FieldErrors } from "@/lib/validationErrors";
 
 export const Signin = () => {
-  const [fields, setFields] = useState<Fields>({});
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+const [fields, setFields] = useState<Fields>(initialValues);
+const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
 
   const navigate = useNavigate();
 
@@ -32,18 +32,18 @@ export const Signin = () => {
     setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const name = e.target.name as FieldName;
-    setFieldErrors((prev) => ({ ...prev, [name]: validateField(name, fields) }));
+  const handleBlur = () => {
+    const result = signinSchema.safeParse(fields);
+    setFieldErrors(result.success ? {} : toFieldErrors<Fields>(result.error));
   };
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
-    const result = validate(fields);
+    const result = signinSchema.safeParse(fields);
 
-    if (!result.ok) {
-      setFieldErrors(result.errors);
+    if (!result.success) {
+        setFieldErrors(toFieldErrors<Fields>(result.error));
       return;
     }
 
@@ -76,10 +76,9 @@ export const Signin = () => {
                   type="text"
                   id="name"
                   placeholder="Insira seu nome"
-                  value={fields.name ?? ""}
+                  value={fields.name}
                   name="name"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 ></Input>
                 <FieldError
                   errors={
@@ -94,7 +93,7 @@ export const Signin = () => {
                   id="email"
                   name="email"
                   placeholder="Insira seu email"
-                  value={fields.email ?? ""}
+                  value={fields.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
                 ></Input>
@@ -107,7 +106,7 @@ export const Signin = () => {
               <Field>
                 <FieldLabel htmlFor="password">Senha</FieldLabel>
                 <PasswordInput
-                  value={fields.password ?? ""}
+                  value={fields.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   name="password"
@@ -127,7 +126,7 @@ export const Signin = () => {
                   Confirmação da senha
                 </FieldLabel>
                 <PasswordInput
-                  value={fields.passwordConfirmation ?? ""}
+                  value={fields.passwordConfirmation}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   name="passwordConfirmation"
