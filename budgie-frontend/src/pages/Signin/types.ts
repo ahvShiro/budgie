@@ -1,8 +1,10 @@
 export interface Fields {
-  name?: string; 
+  name?: string;
   email?: string;
   password?: string;
   passwordConfirmation?: string;
 }
 
-export interface FieldErrors extends Fields {}
+export type FieldName = keyof Fields;
+
+export type FieldErrors = Partial<Record<FieldName, string>>;
