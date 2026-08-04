@@ -5,6 +5,7 @@ import React, { useRef, useState } from "react";
 interface PasswordInputProps extends React.HTMLAttributes<HTMLInputElement> {
   value?: any;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder?: string;
   id?: string;
   name?: string;
@@ -16,6 +17,7 @@ export const PasswordInput = ({
   placeholder,
   className,
   onChange,
+  onBlur,
   name,
   value,
 }: PasswordInputProps) => {
@@ -50,6 +52,7 @@ export const PasswordInput = ({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
       />
       <InputGroupAddon align="inline-end">
         <EyeIcon
