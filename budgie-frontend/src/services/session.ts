@@ -14,7 +14,7 @@ export const session = {
   },
 
   isAuthenticated(): boolean {
-    return this.getToken !== null;
+    return this.getToken() !== null;
   }
 
 }
