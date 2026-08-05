@@ -16,15 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.shiroshima.budgiebackend.dtos.walletMember.WalletMemberRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.walletMember.WalletMemberResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.walletMember.WalletMemberUpdateDTO;
+import br.com.shiroshima.budgiebackend.services.WalletMemberService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/wallet/{walletId}/member")
+@RequiredArgsConstructor
 public class WalletMemberController {
+
+    private final WalletMemberService service;
 
     @PostMapping
     public ResponseEntity<WalletMemberResponseDTO> postMember(@PathVariable Long walletId, @Valid @RequestBody WalletMemberRegisterDTO data) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.registerMember(walletId, data));
     }
 
     @GetMapping
