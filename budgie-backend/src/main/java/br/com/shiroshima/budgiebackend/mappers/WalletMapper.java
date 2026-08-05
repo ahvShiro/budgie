@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.Wallet;
 
@@ -28,6 +29,12 @@ public class WalletMapper {
             wallet.getUpdatedAt(),
             wallet.isActive()
         );
+    }
+
+    public void updateEntity(Wallet wallet, WalletUpdateDTO dto) {
+        wallet.setName(dto.name());
+        wallet.setDescription(dto.description());
+        wallet.setActive(dto.active());
     }
 
 }

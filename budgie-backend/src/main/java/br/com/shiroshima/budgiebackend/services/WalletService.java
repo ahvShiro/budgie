@@ -38,6 +38,12 @@ public class WalletService {
         }
     }
 
+    public void checkOwner(Wallet wallet) {
+        if (!wallet.getOwner().getId().equals(userService.fetchAuthenticatedUser().getId())) {
+            throw new AccessDeniedException("Apenas o dono pode alterar esta carteira");
+        }
+    }
+
     // Métodos externos
 
     public WalletResponseDTO registerWallet(@Valid WalletRegisterDTO data) {
@@ -51,6 +57,15 @@ public class WalletService {
         Wallet wallet = fetchById(id);
         checkAccess(wallet);
         return mapper.toResponse(wallet);
+    }
+
+    public WalletResponseDTO updateWallet(Long id, @Valid WalletUpdateDTO data) {
+        Wallet old = fetchById(id);
+        checkOwner(old);
+
+        mapper.updateEntity(old, data);
+        repo.save(old);
+        return mapper.toResponse(old);
     }
 
 }
