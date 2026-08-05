@@ -39,7 +39,7 @@ public class WalletController {
 
     @GetMapping("/{id}")
     public ResponseEntity<WalletResponseDTO> getWallet(@PathVariable Long id) {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(service.getWallet(id));
     }
 
     @PutMapping("/{id}")
