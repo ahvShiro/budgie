@@ -41,6 +41,10 @@ public class WalletMemberService {
         return repo.findByWalletId(walletId);
     }
 
+    public void deleteMember(WalletMember member) {
+        repo.delete(member);
+    }
+
     // Métodos externos
 
     public WalletMemberResponseDTO registerMember(Long walletId, @Valid WalletMemberRegisterDTO data) {
@@ -95,6 +99,18 @@ public class WalletMemberService {
         mapper.updateEntity(old, data);
         repo.save(old);
         return mapper.toResponse(old);
+    }
+
+    public void removeMember(Long walletId, Long userId) {
+        Wallet wallet = walletService.fetchById(walletId);
+        walletService.checkOwner(wallet);
+
+        // Mesmo softlock do updateMemberRole, sem dono ninguém administra a carteira
+        if (userId.equals(wallet.getOwner().getId())) {
+            throw new BusinessException("O dono não pode ser removido da carteira");
+        }
+
+        deleteMember(fetchByWalletAndUser(walletId, userId));
     }
 
 }

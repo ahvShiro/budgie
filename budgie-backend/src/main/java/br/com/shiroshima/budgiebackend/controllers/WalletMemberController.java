@@ -44,6 +44,7 @@ public class WalletMemberController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> removeMember(@PathVariable Long walletId, @PathVariable Long userId) {
+        service.removeMember(walletId, userId);
         return ResponseEntity.noContent().build();
     }
 
