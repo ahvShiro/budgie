@@ -49,6 +49,7 @@ public class WalletController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeWallet(@PathVariable Long id) {
+        service.removeWallet(id);
         return ResponseEntity.noContent().build();
     }
 

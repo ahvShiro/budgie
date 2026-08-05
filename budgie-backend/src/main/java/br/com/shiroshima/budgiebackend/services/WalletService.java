@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
@@ -12,6 +13,7 @@ import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.WalletMapper;
 import br.com.shiroshima.budgiebackend.models.Wallet;
+import br.com.shiroshima.budgiebackend.repositories.TransactionRepository;
 import br.com.shiroshima.budgiebackend.repositories.WalletRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class WalletService {
     private final WalletRepository repo;
     private final WalletMapper mapper;
     private final UserService userService;
+    private final TransactionRepository transactionRepo;
 
     // Métodos internos
 
@@ -42,6 +45,12 @@ public class WalletService {
         if (!wallet.getOwner().getId().equals(userService.fetchAuthenticatedUser().getId())) {
             throw new AccessDeniedException("Apenas o dono pode alterar esta carteira");
         }
+    }
+
+    public void deactivateWallet(Wallet wallet) {
+        wallet.setActive(false);
+        repo.save(wallet);
+        transactionRepo.deactivateByWalletId(wallet.getId());
     }
 
     // Métodos externos
@@ -66,6 +75,13 @@ public class WalletService {
         mapper.updateEntity(old, data);
         repo.save(old);
         return mapper.toResponse(old);
+    }
+
+    @Transactional
+    public void removeWallet(Long id) {
+        Wallet wallet = fetchById(id);
+        checkOwner(wallet);
+        deactivateWallet(wallet);
     }
 
 }
