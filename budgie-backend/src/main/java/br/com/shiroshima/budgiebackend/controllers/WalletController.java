@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
+import br.com.shiroshima.budgiebackend.services.WalletService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -24,9 +25,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WalletController {
 
+    private final WalletService service;
+
     @PostMapping
     public ResponseEntity<WalletResponseDTO> postWallet(@Valid @RequestBody WalletRegisterDTO data) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.registerWallet(data));
     }
 
     @GetMapping
