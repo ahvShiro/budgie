@@ -48,6 +48,15 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(e.getStatus()).body(e);
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorMessage> handleConflictException(ConflictException ex) {
+        ErrorMessage e = new ErrorMessage(
+            HttpStatus.CONFLICT,
+            ex.getMessage()
+        );
+        return ResponseEntity.status(e.getStatus()).body(e);
+    }
+
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorMessage> handleInvalidTokenException(InvalidTokenException ex) {
         ErrorMessage e = new ErrorMessage(
