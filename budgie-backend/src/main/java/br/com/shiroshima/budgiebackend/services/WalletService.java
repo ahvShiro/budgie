@@ -12,8 +12,12 @@ import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.WalletMapper;
+import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.Wallet;
+import br.com.shiroshima.budgiebackend.models.WalletMember;
+import br.com.shiroshima.budgiebackend.models.enums.WalletRole;
 import br.com.shiroshima.budgiebackend.repositories.TransactionRepository;
+import br.com.shiroshima.budgiebackend.repositories.WalletMemberRepository;
 import br.com.shiroshima.budgiebackend.repositories.WalletRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,7 @@ public class WalletService {
     private final WalletMapper mapper;
     private final UserService userService;
     private final TransactionRepository transactionRepo;
+    private final WalletMemberRepository walletMemberRepo;
 
     // Métodos internos
 
@@ -34,9 +39,8 @@ public class WalletService {
         return repo.findByIdAndActive(id, true).orElseThrow(() -> new ResourceNotFoundException("Carteira não encontrada"));
     }
 
-    // TODO enquanto WalletMember não existe só o dono passa
     public void checkAccess(Wallet wallet) {
-        if (!wallet.getOwner().getId().equals(userService.fetchAuthenticatedUser().getId())) {
+        if (!walletMemberRepo.existsByWalletIdAndUserId(wallet.getId(), userService.fetchAuthenticatedUser().getId())) {
             throw new AccessDeniedException("Você não tem acesso a esta carteira");
         }
     }
@@ -55,18 +59,22 @@ public class WalletService {
 
     // Métodos externos
 
+    // Transactional porque são duas escritas
+    @Transactional
     public WalletResponseDTO registerWallet(@Valid WalletRegisterDTO data) {
-        // TODO falta gravar o WalletMember do dono com papel OWNER
-        Wallet newWallet = mapper.toEntity(data, userService.fetchAuthenticatedUser());
+        User owner = userService.fetchAuthenticatedUser();
+
+        Wallet newWallet = mapper.toEntity(data, owner);
         repo.save(newWallet);
+        walletMemberRepo.save(new WalletMember(newWallet, owner, WalletRole.OWNER));
+
         return mapper.toResponse(newWallet);
     }
 
-    // TODO enquanto WalletMember não existe só traz as minhas carteiras
     public List<WalletResponseDTO> getWallets() {
-        return repo.findByOwnerIdAndActive(userService.fetchAuthenticatedUser().getId(), true)
+        return walletMemberRepo.findByUserIdAndWalletActive(userService.fetchAuthenticatedUser().getId(), true)
         .stream()
-        .map(obj -> mapper.toResponse(obj))
+        .map(obj -> mapper.toResponse(obj.getWallet()))
         .toList();
     }
 
