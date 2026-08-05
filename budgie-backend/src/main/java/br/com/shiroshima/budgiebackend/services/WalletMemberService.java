@@ -1,5 +1,7 @@
 package br.com.shiroshima.budgiebackend.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -35,6 +37,10 @@ public class WalletMemberService {
             .orElseThrow(() -> new ResourceNotFoundException("Membro não encontrado"));
     }
 
+    public List<WalletMember> fetchByWallet(Long walletId) {
+        return repo.findByWalletId(walletId);
+    }
+
     // Métodos externos
 
     public WalletMemberResponseDTO registerMember(Long walletId, @Valid WalletMemberRegisterDTO data) {
@@ -59,6 +65,16 @@ public class WalletMemberService {
         WalletMember newMember = mapper.toEntity(wallet, user, data.role());
         repo.save(newMember);
         return mapper.toResponse(newMember);
+    }
+
+    public List<WalletMemberResponseDTO> getMembers(Long walletId) {
+        Wallet wallet = walletService.fetchById(walletId);
+        walletService.checkAccess(wallet);
+
+        return fetchByWallet(walletId)
+        .stream()
+        .map(obj -> mapper.toResponse(obj))
+        .toList();
     }
 
     public WalletMemberResponseDTO updateMemberRole(Long walletId, Long userId, @Valid WalletMemberUpdateDTO data) {

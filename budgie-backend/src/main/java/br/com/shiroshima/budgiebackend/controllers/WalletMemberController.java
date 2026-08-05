@@ -34,7 +34,7 @@ public class WalletMemberController {
 
     @GetMapping
     public ResponseEntity<List<WalletMemberResponseDTO>> getMembers(@PathVariable Long walletId) {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(service.getMembers(walletId));
     }
 
     @PatchMapping("/{userId}")

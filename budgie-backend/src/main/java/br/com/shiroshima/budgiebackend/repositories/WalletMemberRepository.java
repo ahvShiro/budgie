@@ -1,5 +1,6 @@
 package br.com.shiroshima.budgiebackend.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ public interface WalletMemberRepository extends JpaRepository<WalletMember, Long
     boolean existsByWalletIdAndUserId(Long walletId, Long userId);
 
     Optional<WalletMember> findByWalletIdAndUserId(Long walletId, Long userId);
+
+    List<WalletMember> findByWalletId(Long walletId);
 }
