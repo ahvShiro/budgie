@@ -62,6 +62,14 @@ public class WalletService {
         return mapper.toResponse(newWallet);
     }
 
+    // TODO enquanto WalletMember não existe só traz as minhas carteiras
+    public List<WalletResponseDTO> getWallets() {
+        return repo.findByOwnerIdAndActive(userService.fetchAuthenticatedUser().getId(), true)
+        .stream()
+        .map(obj -> mapper.toResponse(obj))
+        .toList();
+    }
+
     public WalletResponseDTO getWallet(Long id) {
         Wallet wallet = fetchById(id);
         checkAccess(wallet);

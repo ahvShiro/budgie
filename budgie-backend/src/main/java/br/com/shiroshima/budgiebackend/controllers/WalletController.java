@@ -34,7 +34,7 @@ public class WalletController {
 
     @GetMapping
     public ResponseEntity<List<WalletResponseDTO>> getWallets() {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(service.getWallets());
     }
 
     @GetMapping("/{id}")
