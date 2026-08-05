@@ -8,12 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -21,20 +23,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorMessage> handleUnhandledException(Exception ex) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorMessage> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         ErrorMessage e = new ErrorMessage(
-            HttpStatus.INTERNAL_SERVER_ERROR, 
-            "Erro inesperado! Contate o administrador"
+            HttpStatus.BAD_REQUEST,
+            "Verifique as informações e tente novamente"
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorMessage> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+        ErrorMessage e = new ErrorMessage(
+            HttpStatus.METHOD_NOT_ALLOWED,
+            "Método não suportado nesta rota"
+        );
+        return ResponseEntity.status(e.getStatus()).body(e);
+    }
+
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ErrorMessage e = new ErrorMessage(
             HttpStatus.NOT_FOUND, 
-            "Recurso não encontrado"
+            ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
     }
@@ -100,7 +112,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         ErrorMessage e = new ErrorMessage(
             HttpStatus.CONFLICT, 
-            ex.getMessage()
+            "Erro no banco de dados. Contatar o admin"
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }
@@ -123,5 +135,13 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(e.getStatus()).body(e);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorMessage> handleUnhandledException(Exception ex) {
+        ErrorMessage e = new ErrorMessage(
+            HttpStatus.INTERNAL_SERVER_ERROR, 
+            "Erro inesperado! Contate o administrador"
+        );
+        return ResponseEntity.status(e.getStatus()).body(e);
+    }
 
 }
