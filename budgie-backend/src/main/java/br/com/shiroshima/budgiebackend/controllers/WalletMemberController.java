@@ -39,7 +39,7 @@ public class WalletMemberController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<WalletMemberResponseDTO> updateMemberRole(@PathVariable Long walletId, @PathVariable Long userId, @Valid @RequestBody WalletMemberUpdateDTO data) {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(service.updateMemberRole(walletId, userId, data));
     }
 
     @DeleteMapping("/{userId}")

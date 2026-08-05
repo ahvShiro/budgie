@@ -5,6 +5,7 @@ import org.springframework.validation.annotation.Validated;
 
 import br.com.shiroshima.budgiebackend.dtos.walletMember.WalletMemberRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.walletMember.WalletMemberResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.walletMember.WalletMemberUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
 import br.com.shiroshima.budgiebackend.exceptions.ConflictException;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
@@ -27,6 +28,12 @@ public class WalletMemberService {
     private final WalletService walletService;
     private final UserService userService;
 
+    // Métodos internos
+
+    public WalletMember fetchByWalletAndUser(Long walletId, Long userId) {
+        return repo.findByWalletIdAndUserId(walletId, userId)
+            .orElseThrow(() -> new ResourceNotFoundException("Membro não encontrado"));
+    }
 
     // Métodos externos
 
@@ -52,6 +59,26 @@ public class WalletMemberService {
         WalletMember newMember = mapper.toEntity(wallet, user, data.role());
         repo.save(newMember);
         return mapper.toResponse(newMember);
+    }
+
+    public WalletMemberResponseDTO updateMemberRole(Long walletId, Long userId, @Valid WalletMemberUpdateDTO data) {
+        Wallet wallet = walletService.fetchById(walletId);
+        walletService.checkOwner(wallet);
+
+        if (data.role() == WalletRole.OWNER) {
+            throw new BusinessException("A carteira só pode ter um dono");
+        }
+
+        // Impedir softlock do dono da carteira por ele mesmo
+        if (userId.equals(wallet.getOwner().getId())) {
+            throw new BusinessException("O papel do dono não pode ser alterado");
+        }
+
+        WalletMember old = fetchByWalletAndUser(walletId, userId);
+
+        mapper.updateEntity(old, data);
+        repo.save(old);
+        return mapper.toResponse(old);
     }
 
 }
