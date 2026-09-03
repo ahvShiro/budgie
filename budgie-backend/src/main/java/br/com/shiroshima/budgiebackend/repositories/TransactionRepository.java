@@ -18,6 +18,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     Optional<Transaction> findByIdAndWalletIdAndActive(Long id, Long walletId, Boolean active);
 
+    boolean existsByCategoryIdAndActive(Long categoryId, Boolean active);
+
     @EntityGraph(attributePaths = { "category", "createdBy", "wallet" })
     @Query("""
             SELECT t FROM Transaction t

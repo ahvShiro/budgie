@@ -8,11 +8,13 @@ import org.springframework.validation.annotation.Validated;
 import br.com.shiroshima.budgiebackend.dtos.category.CategoryRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.category.CategoryResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.category.CategoryUpdateDTO;
+import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.CategoryMapper;
 import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 import br.com.shiroshima.budgiebackend.repositories.CategoryRepository;
+import br.com.shiroshima.budgiebackend.repositories.TransactionRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,7 @@ public class CategoryService {
     private final CategoryRepository repo;
     private final CategoryMapper mapper;
     private final UserService userService;
+    private final TransactionRepository transactionRepo;
 
     // Métodos internos
 
@@ -68,10 +71,10 @@ public class CategoryService {
 
     public void removeCategory(Long id) {
         Category cat = fetchById(id);
-        
-        // if (/* CONDIÇÃO */) {
-        //     throw new BusinessException("Não foi possível excluir pois existem transações com esta categoria");
-        // }
+
+        if (transactionRepo.existsByCategoryIdAndActive(cat.getId(), true)) {
+            throw new BusinessException("Não foi possível excluir pois existem transações com esta categoria");
+        }
 
         deleteCategory(cat);
     }
