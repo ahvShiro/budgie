@@ -2,6 +2,7 @@ package br.com.shiroshima.budgiebackend.services;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -43,6 +44,12 @@ public class CategoryService {
         repo.delete(category);
     }
 
+    public void checkOwner(Category category) {
+        if (!category.getUser().getId().equals(userService.fetchAuthenticatedUser().getId())) {
+            throw new AccessDeniedException("Você não tem acesso a esta categoria");
+        }
+    }
+
     // Métodos externos
 
     public CategoryResponseDTO registerCategory(@Valid CategoryRegisterDTO data) {
@@ -61,8 +68,7 @@ public class CategoryService {
 
     public CategoryResponseDTO updateCategory(Long id, @Valid CategoryUpdateDTO data) {
         Category old = fetchById(id);
-
-        // Validar se categoria pertence ao usuario autenticado qdo autenticação for implementada 100%
+        checkOwner(old);
 
         mapper.updateEntity(old, data);
         repo.save(old);
