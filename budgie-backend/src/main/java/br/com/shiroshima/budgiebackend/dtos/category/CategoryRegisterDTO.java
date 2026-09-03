@@ -9,10 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record CategoryRegisterDTO(
-    @NotNull 
-    Long userId,
-
-    @NotBlank(message = "{name.shouldrequired}") 
+    @NotBlank(message = "{name.shouldrequired}")
     String name,
 
     @NotNull

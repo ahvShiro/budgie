@@ -53,7 +53,7 @@ public class CategoryService {
     // Métodos externos
 
     public CategoryResponseDTO registerCategory(@Valid CategoryRegisterDTO data) {
-        Category newCategory = mapper.toEntity(data, userService.fetchById(data.userId()));
+        Category newCategory = mapper.toEntity(data, userService.fetchAuthenticatedUser());
         repo.save(newCategory);
         return mapper.toResponse(newCategory);
     }
