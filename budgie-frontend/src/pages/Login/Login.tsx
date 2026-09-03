@@ -1,7 +1,9 @@
+import { PasswordInput } from "@/components/PasswordInput";
 import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -10,42 +12,54 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { Fields } from "./types";
+import { initialValues, loginSchema, type Fields } from "./Login.validation";
 import axios from "axios";
 import { toast } from "sonner";
 import AuthService from "@/services/AuthService";
 import { session } from "@/services/session";
+import type { ApiErrorMessage } from "@/services/types";
+import { toFieldErrors, type FieldErrors } from "@/lib/validationErrors";
 
 export const Login = () => {
-  const [fields, setFields] = useState<Fields>({email: "", password: ""});
+  const [fields, setFields] = useState<Fields>(initialValues);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFields({ ...fields, [e.target.name]: e.target.value });
-    console.log(fields);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFields((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+
+    const result = loginSchema.safeParse(fields);
+
+    if (!result.success) {
+      setFieldErrors(toFieldErrors<Fields>(result.error));
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      
-      const { token } = await AuthService.authenticate({
-        email: fields.email,
-        password: fields.password
-      });
+      const { token } = await AuthService.authenticate(result.data);
 
       session.setToken(token);
 
       toast.success("Usuário autenticado com sucesso!");
 
       navigate("/app/dashboard");
-      
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
+      if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
         toast.error(err.response.data.message);
       } else {
         toast.error("Erro inesperado, contate o admin");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -71,28 +85,39 @@ export const Login = () => {
                   value={fields.email}
                   onChange={handleChange}
                 ></Input>
+                <FieldError
+                  errors={
+                    fieldErrors.email ? [{ message: fieldErrors.email }] : []
+                  }
+                />
               </Field>
 
               <Field>
                 <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">Senha</FieldLabel>
                   <FieldDescription className="ml-auto">
                     <Link to="/recuperar-senha">Esqueceu a senha?</Link>
                   </FieldDescription>
                 </div>
-                <Input
-                  type="password"
+                <PasswordInput
                   id="password"
                   placeholder="Insira sua senha"
                   name="password"
                   value={fields.password}
                   onChange={handleChange}
-                ></Input>
+                />
+                <FieldError
+                  errors={
+                    fieldErrors.password
+                      ? [{ message: fieldErrors.password }]
+                      : []
+                  }
+                />
               </Field>
 
               <Field>
-                <Button type="submit" className="mt-4">
-                  Entrar na conta
+                <Button type="submit" className="mt-4" disabled={isSubmitting}>
+                  {isSubmitting ? "Entrando..." : "Entrar na conta"}
                 </Button>
 
                 <FieldDescription className="text-center">
