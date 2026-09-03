@@ -25,8 +25,5 @@ public record TransactionUpdateDTO(
 
     @NotNull(message = "{date.shouldrequired}")
     @PastOrPresent(message = "{date.shouldpastorpresent}")
-    LocalDate date,
-
-    @NotNull
-    Boolean active
+    LocalDate date
 ) {}

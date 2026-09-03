@@ -2,19 +2,33 @@ package br.com.shiroshima.budgiebackend.mappers;
 
 import org.springframework.stereotype.Component;
 
+import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionResponseDTO;
+import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionUpdateDTO;
+import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.Transaction;
+import br.com.shiroshima.budgiebackend.models.User;
+import br.com.shiroshima.budgiebackend.models.Wallet;
 
 @Component
 public class TransactionMapper {
 
-    // toEntity e updateEntity entram junto com o register e o update
+    public Transaction toEntity(TransactionRegisterDTO dto, Wallet wallet, Category category, User createdBy) {
+        return new Transaction(
+            wallet,
+            category,
+            createdBy,
+            dto.type(),
+            dto.value(),
+            dto.description(),
+            dto.date()
+        );
+    }
 
     public TransactionResponseDTO toResponse(Transaction transaction) {
         return new TransactionResponseDTO(
             transaction.getId(),
             transaction.getWallet().getId(),
-            // Categoria é opcional, então o id pode não existir
             transaction.getCategory() != null ? transaction.getCategory().getId() : null,
             transaction.getCreatedBy().getId(),
             transaction.getType(),
@@ -27,4 +41,11 @@ public class TransactionMapper {
         );
     }
 
+    public void updateEntity(Transaction transaction, TransactionUpdateDTO dto, Category category) {
+        transaction.setCategory(category);
+        transaction.setType(dto.type());
+        transaction.setValue(dto.value());
+        transaction.setDescription(dto.description());
+        transaction.setDate(dto.date());
+    }
 }
