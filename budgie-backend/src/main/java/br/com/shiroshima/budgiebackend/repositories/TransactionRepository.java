@@ -40,8 +40,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             Pageable pageable);
 
     @Modifying(flushAutomatically = true)
-    @Query("UPDATE Transaction t SET t.active = false WHERE t.wallet.id = :walletId AND t.id = :id AND t.active = true")
-    int deactivateByWalletId(@Param("walletId") Long walletId, @Param("id") Long id);
+    @Query("UPDATE Transaction t SET t.active = false WHERE t.wallet.id = :walletId AND t.active = true")
+    int deactivateByWalletId(@Param("walletId") Long walletId);
 
     @Modifying(flushAutomatically = true)
     @Query("UPDATE Transaction t SET t.active = false WHERE t.wallet.id = :walletId AND t.id = :id AND t.active = true")

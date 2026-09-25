@@ -51,6 +51,7 @@ public class WalletService {
         }
     }
 
+    @Transactional
     public void deactivateWallet(Wallet wallet) {
         wallet.setActive(false);
         repo.save(wallet);
