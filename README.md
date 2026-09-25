@@ -24,18 +24,14 @@ FRONTEND: React, TypeScript, Vite, axios, react-router-dom, shadcn/radix-ui, Tai
 
 ## Pré-requisitos
 
-- Java 21+
-- Maven
+- Docker
 - Node.js 18+ e npm
-- MySQL rodando localmente (via XAMPP), porta padrão 3306
 
 ## Configuração
 
 ### Backend
 
-Editar `budgie-backend/src/main/resources/application-secrets-example.properties` com: senha do usuário do banco, chave para assinar o JWT, e senha/app-password da conta de e-mail configurada em spring.mail.username
-
-Criar no MySQL (XAMPP) um banco chamado `budgie_database`. As tabelas são criadas/atualizadas automaticamente pelo Hibernate (`spring.jpa.hibernate.ddl-auto=update`)
+Editar `/budgie-backend/.env.example` e copiar para `/budgie-backend/.env` 
 
 ### Frontend
 
