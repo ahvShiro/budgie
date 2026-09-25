@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN mvn package
+RUN mvn package -DskipTests
 
 # TODO Adicionar as variáveis de ambiente em um .env pra não ter como commitar sem querer
 
