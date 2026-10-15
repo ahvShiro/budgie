@@ -92,7 +92,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorMessage e = new ErrorMessage(
             HttpStatus.FORBIDDEN, 
-            "Acesso negado. Verifique se está autenticado e tente novamente"
+            "Você não tem permissão para acessar este recurso"
         );
         return ResponseEntity.status(e.getStatus()).body(e);
     }

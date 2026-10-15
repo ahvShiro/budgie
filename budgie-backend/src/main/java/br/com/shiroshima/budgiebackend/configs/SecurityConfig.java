@@ -28,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
     
     private final SecurityFilter securityFilter;
+    private final ApiAuthEntryPoint authEntryPoint;
+    private final ApiAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
@@ -43,9 +45,14 @@ public class SecurityConfig {
 
                 // Acesso a usuários autenticados
                 .requestMatchers("/api/v1/users/me", "/api/v1/users/me/**").authenticated()
-                                
+
                 // Acesso ao restante apenas autenticado
                 .anyRequest().authenticated()
+            )
+            // 401 pra quem não está autenticado, 403 pra quem está mas não tem permissão
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(authEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .cors(Customizer.withDefaults())
