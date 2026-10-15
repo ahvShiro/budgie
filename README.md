@@ -16,9 +16,9 @@ Frontend em produção: https://budgie.shiroshima.com.br/
 2. `services` (regras de negócio, validação)
 3. `repositories` (JPA/Hibernate)
 4. `models` (entidades), com `dtos` isolando o que trafega pela API e `configs`/`exceptions` cuidando de segurança (JWT stateless) e tratamento de erro centralizado. 
-Persistência em MySQL, rodando localmente via XAMPP.
+Persistência em PostgreSQL, rodando via Docker Compose.
 
-BACKEND: Spring Boot 3, Spring Security + JWT (`java-jwt`), Spring Data JPA/Hibernate, Bean Validation, Spring Mail, Thymeleaf, MySQL, Maven.
+BACKEND: Spring Boot 3, Spring Security + JWT (`java-jwt`), Spring Data JPA/Hibernate, Bean Validation, Spring Mail, Thymeleaf, PostgreSQL, Maven.
 
 FRONTEND: React, TypeScript, Vite, axios, react-router-dom, shadcn/radix-ui, Tailwind v4, `@zxcvbn-ts` (força de senha), sonner (toasts).
 
@@ -110,7 +110,7 @@ No frontend: login, cadastro, recuperação/redefinição de senha, suporte, 404
 
 ## Decisões de projeto
 
-- MySQL via XAMPP em vez de PostgreSQL: ambiente já disponível localmente e utilizado durante as aulas
+- PostgreSQL via Docker Compose: banco sobe junto com a API num único `docker compose up`
 - Rotas singulares (`/api/v1/category`) em vez do plural sugerido pela documentação do professor: mantido por consistência com o restante das rotas já implementadas; migração para plural fica marcada como decisão a revisitar em conjunto
 - Validação duplicada (Bean Validation na entidade e na DTO de request): a entidade funciona como última linha de defesa, independente de qual caminho popula o objeto
 - Validação no frontend: implementado para o cliente não precisar fazer uma requisição custosa inválida para o servidor, embora recomendação pessoal do professor para validar pelo backend
