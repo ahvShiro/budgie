@@ -7,13 +7,16 @@ services:
       - "8080:8080"
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
+        required: false
     env_file:
       - .env
 
   postgres:
     image: postgres:17
     container_name: budgie-database
+    profiles: ["local-db"]
     environment:
       POSTGRES_DB: ${DATASOURCE_DATABASE}
       POSTGRES_USER: ${DATASOURCE_USERNAME}
