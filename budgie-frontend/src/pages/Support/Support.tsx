@@ -14,14 +14,14 @@ export const Support = () => {
           Precisa de ajuda? Entre em contato pelo email{' '}
           <a
             href={`mailto:${SUPPORT_EMAIL}`}
-            className="underline text-current/75 hover:text-current/100"
+            className="underline text-current/75 hover:text-current"
           >
             {SUPPORT_EMAIL}
           </a>
           , ou abra uma issue no GitHub no{' '}
           <a
             href="https://github.com/ahvShiro/budgie"
-            className="underline text-current/75 hover:text-current/100"
+            className="underline text-current/75 hover:text-current"
           >
             repositório
           </a>
