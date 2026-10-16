@@ -23,7 +23,6 @@ import {
   LayoutDashboard,
   LifeBuoy,
   LogOut,
-  Tag,
   User,
   Wallet,
 } from 'lucide-react';
@@ -31,9 +30,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
-  { title: 'Transações', url: '/app/transacoes', icon: ArrowLeftRight },
-  { title: 'Categorias', url: '/app/categorias', icon: Tag },
   { title: 'Carteiras', url: '/app/carteiras', icon: Wallet },
+  { title: 'Transações', url: '/app/transacoes', icon: ArrowLeftRight },
+  // { title: 'Categorias', url: '/app/categorias', icon: Tag },
 ];
 
 type AppSidebarProps = {

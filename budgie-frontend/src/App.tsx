@@ -11,7 +11,8 @@ import { AppLayout } from './components/AppLayout';
 import { PrivateRoute } from './components/PrivateRoute';
 import { PublicRoute } from './components/PublicRoute';
 import { session } from './services/session';
-import {WalletListing} from "@/pages/Wallets/WalletListing.tsx";
+import { WalletListing } from '@/pages/Wallets/WalletListing.tsx';
+import { CategoryListing } from '@/pages/Categories/CategoryListing.tsx';
 
 function App() {
   // TODO orquestrar páginas e adicionar fluxo
@@ -42,6 +43,7 @@ function App() {
               <Route path="/app/perfil/senha" element={<div />} />
               <Route path="/suporte" element={<Support />} />
               <Route path="/app/carteiras" element={<WalletListing />} />
+              <Route path="/app/categorias" element={<CategoryListing />} />
             </Route>
           </Route>
 

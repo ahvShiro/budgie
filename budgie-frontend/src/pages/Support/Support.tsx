@@ -45,6 +45,14 @@ export const Support = () => {
         >
           Ir para a página principal
         </Button>
+
+        {/*    IDEIAS:
+
+        ADicionar um botão de whatsapp redondo no canto pra mandar mensagem pra mim
+
+        Adicionar um formulário de email para criar tickets para a minha pessoa resolver
+        Manter os links mas estruturar pra ficar no estilo da dashboard
+      */}
       </div>
     </main>
   );
