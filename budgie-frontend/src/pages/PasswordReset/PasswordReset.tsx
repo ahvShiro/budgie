@@ -1,7 +1,7 @@
-import { ExpiredPasswordRedefinitionToken } from "@/components/ExpiredPasswordRedefinitionToken";
-import { PasswordInput } from "@/components/PasswordInput";
-import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
-import { Button } from "@/components/ui/button";
+import { ExpiredPasswordRedefinitionToken } from '@/components/ExpiredPasswordRedefinitionToken';
+import { PasswordInput } from '@/components/PasswordInput';
+import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
+import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldDescription,
@@ -10,19 +10,19 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field";
-import { toFieldErrors, type FieldErrors } from "@/lib/validationErrors";
-import AuthService from "@/services/AuthService";
-import type { ApiErrorMessage } from "@/services/types";
-import axios from "axios";
-import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
+} from '@/components/ui/field';
+import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors';
+import AuthService from '@/services/AuthService';
+import type { ApiErrorMessage } from '@/services/types';
+import axios from 'axios';
+import { useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   initialValues,
   resetSchema,
   type Fields,
-} from "./PasswordReset.validation";
+} from './PasswordReset.validation';
 
 export const PasswordReset = () => {
   const { token } = useParams<{ token: string }>();
@@ -56,12 +56,12 @@ export const PasswordReset = () => {
         ...result.data,
       });
       toast.success(message);
-      navigate("/login");
+      navigate('/login');
     } catch (err) {
       if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
         toast.error(err.response.data.message);
       } else {
-        toast.error("Erro inesperado");
+        toast.error('Erro inesperado');
       }
     }
   };
@@ -121,10 +121,8 @@ export const PasswordReset = () => {
                 </Button>
 
                 <FieldDescription className="text-center">
-                  Precisa de ajuda?{" "}
-                <Link to="/suporte">
-                  Entre em contato com o suporte.
-                </Link>
+                  Precisa de ajuda?{' '}
+                  <Link to="/suporte">Entre em contato com o suporte.</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

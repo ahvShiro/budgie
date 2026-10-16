@@ -9,15 +9,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { session } from "@/services/session";
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { session } from '@/services/session';
 import {
   ArrowLeftRight,
   LayoutDashboard,
@@ -26,14 +26,14 @@ import {
   Tag,
   User,
   Wallet,
-} from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+} from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { title: "Dashboard", url: "/app/dashboard", icon: LayoutDashboard },
-  { title: "Transações", url: "/app/transacoes", icon: ArrowLeftRight },
-  { title: "Categorias", url: "/app/categorias", icon: Tag },
-  { title: "Carteiras", url: "/app/carteiras", icon: Wallet },
+  { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
+  { title: 'Transações', url: '/app/transacoes', icon: ArrowLeftRight },
+  { title: 'Categorias', url: '/app/categorias', icon: Tag },
+  { title: 'Carteiras', url: '/app/carteiras', icon: Wallet },
 ];
 
 type AppSidebarProps = {
@@ -44,11 +44,11 @@ export const AppSidebar = ({ userName }: AppSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const initial = userName.trim().charAt(0).toUpperCase() || "?";
+  const initial = userName.trim().charAt(0).toUpperCase() || '?';
 
   const handleLogout = () => {
     session.clearToken();
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
@@ -66,7 +66,10 @@ export const AppSidebar = ({ userName }: AppSidebarProps) => {
             <SidebarMenu>
               {NAV_ITEMS.map((item) => (
                 <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.url}
+                  >
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -83,7 +86,10 @@ export const AppSidebar = ({ userName }: AppSidebarProps) => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={location.pathname === "/app/perfil/senha"}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === '/app/perfil/senha'}
+                >
                   <Link to="/app/perfil/senha">
                     <User />
                     <span>Perfil</span>
@@ -91,7 +97,10 @@ export const AppSidebar = ({ userName }: AppSidebarProps) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={location.pathname === "/suporte"}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === '/suporte'}
+                >
                   <Link to="/suporte">
                     <LifeBuoy />
                     <span>Suporte</span>
@@ -115,7 +124,11 @@ export const AppSidebar = ({ userName }: AppSidebarProps) => {
                   <span className="truncate">{userName}</span>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="min-w-56">
+              <DropdownMenuContent
+                side="top"
+                align="start"
+                className="min-w-56"
+              >
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut />
                   Sair

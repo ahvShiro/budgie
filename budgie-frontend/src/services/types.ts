@@ -6,7 +6,7 @@ export interface RegisterDTO {
 }
 
 export interface AuthDTO {
-  email: string; 
+  email: string;
   password: string;
 }
 
@@ -29,7 +29,7 @@ export interface ApiAuthResponseDTO {
 }
 
 export interface ApiUserResponseDTO {
-  id: number; 
+  id: number;
   name: string;
   email: string;
   createdAt: string;
@@ -42,7 +42,7 @@ export interface ApiErrorMessage {
   message: string;
 }
 
-export type TransactionType = "INCOME" | "EXPENSE";
+export type TransactionType = 'INCOME' | 'EXPENSE';
 
 export interface ApiTransactionResponseDTO {
   id: number;
@@ -51,7 +51,7 @@ export interface ApiTransactionResponseDTO {
   type: TransactionType;
   value: number;
   description: string;
-  date: string; 
+  date: string;
   createdAt: string;
 }
 
@@ -75,4 +75,3 @@ export interface ApiWalletSummaryDTO {
   byCategory: ApiCategorySummaryDTO[];
   byMonth: ApiMonthSummaryDTO[];
 }
-

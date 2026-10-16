@@ -1,4 +1,4 @@
-const TOKEN_KEY = "app-token";
+const TOKEN_KEY = 'app-token';
 
 export const session = {
   setToken(token: string) {
@@ -15,6 +15,5 @@ export const session = {
 
   isAuthenticated(): boolean {
     return this.getToken() !== null;
-  }
-
-}
+  },
+};

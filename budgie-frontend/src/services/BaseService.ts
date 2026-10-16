@@ -1,5 +1,5 @@
-import type { AxiosInstance } from "axios";
-import api from "../configs/axiosConfig";
+import type { AxiosInstance } from 'axios';
+import api from '../configs/axiosConfig';
 
 abstract class BaseService {
   protected endPoint: string;

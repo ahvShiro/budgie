@@ -1,5 +1,5 @@
-import { PasswordInput } from "@/components/PasswordInput";
-import { Button } from "@/components/ui/button";
+import { PasswordInput } from '@/components/PasswordInput';
+import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldDescription,
@@ -8,17 +8,17 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { initialValues, loginSchema, type Fields } from "./Login.validation";
-import axios from "axios";
-import { toast } from "sonner";
-import AuthService from "@/services/AuthService";
-import { session } from "@/services/session";
-import type { ApiErrorMessage } from "@/services/types";
-import { toFieldErrors, type FieldErrors } from "@/lib/validationErrors";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { initialValues, loginSchema, type Fields } from './Login.validation';
+import axios from 'axios';
+import { toast } from 'sonner';
+import AuthService from '@/services/AuthService';
+import { session } from '@/services/session';
+import type { ApiErrorMessage } from '@/services/types';
+import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors';
 
 export const Login = () => {
   const [fields, setFields] = useState<Fields>(initialValues);
@@ -49,14 +49,14 @@ export const Login = () => {
 
       session.setToken(token);
 
-      toast.success("Usuário autenticado com sucesso!");
+      toast.success('Usuário autenticado com sucesso!');
 
-      navigate("/app/dashboard");
+      navigate('/app/dashboard');
     } catch (err) {
       if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
         toast.error(err.response.data.message);
       } else {
-        toast.error("Erro inesperado, contate o admin");
+        toast.error('Erro inesperado, contate o admin');
       }
     } finally {
       setIsSubmitting(false);
@@ -117,7 +117,7 @@ export const Login = () => {
 
               <Field>
                 <Button type="submit" className="mt-4" disabled={isSubmitting}>
-                  {isSubmitting ? "Entrando..." : "Entrar na conta"}
+                  {isSubmitting ? 'Entrando...' : 'Entrar na conta'}
                 </Button>
 
                 <FieldDescription className="text-center">

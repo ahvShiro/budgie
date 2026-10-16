@@ -1,15 +1,17 @@
 // Instâncias a nível de módulo, criar Intl a cada render é caro
-const currencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
 });
 
-const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  day: "2-digit",
-  month: "2-digit",
+const shortDateFormatter = new Intl.DateTimeFormat('pt-BR', {
+  day: '2-digit',
+  month: '2-digit',
 });
 
-const monthLabelFormatter = new Intl.DateTimeFormat("pt-BR", { month: "short" });
+const monthLabelFormatter = new Intl.DateTimeFormat('pt-BR', {
+  month: 'short',
+});
 
 export function formatCurrency(value: number) {
   return currencyFormatter.format(value);

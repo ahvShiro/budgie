@@ -1,8 +1,8 @@
-import type { ZodError } from "zod";
+import type { ZodError } from 'zod';
 
 export type FieldErrors<T> = Partial<Record<keyof T, string>>;
 
-export const toFieldErrors = <T,>(error: ZodError): FieldErrors<T> => {
+export const toFieldErrors = <T>(error: ZodError): FieldErrors<T> => {
   const errors: Record<string, string> = {};
 
   for (const issue of error.issues) {

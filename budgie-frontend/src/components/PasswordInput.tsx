@@ -1,6 +1,6 @@
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import React, { useRef, useState } from "react";
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { InputGroup, InputGroupAddon, InputGroupInput } from './ui/input-group';
+import React, { useRef, useState } from 'react';
 
 interface PasswordInputProps extends React.HTMLAttributes<HTMLInputElement> {
   value?: any;
@@ -46,7 +46,7 @@ export const PasswordInput = ({
       <InputGroupInput
         className={className}
         ref={inputRef}
-        type={isPasswordVisible ? "text" : "password"}
+        type={isPasswordVisible ? 'text' : 'password'}
         id={id}
         placeholder={placeholder}
         name={name}
@@ -57,12 +57,12 @@ export const PasswordInput = ({
       <InputGroupAddon align="inline-end">
         <EyeIcon
           aria-hidden={isPasswordVisible}
-          className={isPasswordVisible ? "hidden" : ""}
+          className={isPasswordVisible ? 'hidden' : ''}
           onClick={() => togglePasswordVisibility()}
         />
         <EyeOffIcon
           aria-hidden={!isPasswordVisible}
-          className={!isPasswordVisible ? "hidden" : ""}
+          className={!isPasswordVisible ? 'hidden' : ''}
           onClick={() => togglePasswordVisibility()}
         />
       </InputGroupAddon>

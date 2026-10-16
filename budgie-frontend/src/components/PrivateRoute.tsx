@@ -1,6 +1,10 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { session } from "@/services/session";
+import { Navigate, Outlet } from 'react-router-dom';
+import { session } from '@/services/session';
 
 export const PrivateRoute = () => {
-  return session.isAuthenticated() ? <Outlet /> : <Navigate to="/login" replace />;
+  return session.isAuthenticated() ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login" replace />
+  );
 };

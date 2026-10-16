@@ -1,6 +1,6 @@
-import { PasswordInput } from "@/components/PasswordInput";
-import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
-import { Button } from "@/components/ui/button";
+import { PasswordInput } from '@/components/PasswordInput';
+import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
+import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldDescription,
@@ -9,20 +9,20 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import AuthService from "@/services/AuthService";
-import type { ApiErrorMessage } from "@/services/types";
-import axios from "axios";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { initialValues, signinSchema, type Fields } from "./Signin.validation";
-import { toFieldErrors, type FieldErrors } from "@/lib/validationErrors";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import AuthService from '@/services/AuthService';
+import type { ApiErrorMessage } from '@/services/types';
+import axios from 'axios';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { initialValues, signinSchema, type Fields } from './Signin.validation';
+import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors';
 
 export const Signin = () => {
-const [fields, setFields] = useState<Fields>(initialValues);
-const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
+  const [fields, setFields] = useState<Fields>(initialValues);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
 
   const navigate = useNavigate();
 
@@ -38,19 +38,19 @@ const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
     const result = signinSchema.safeParse(fields);
 
     if (!result.success) {
-        setFieldErrors(toFieldErrors<Fields>(result.error));
+      setFieldErrors(toFieldErrors<Fields>(result.error));
       return;
     }
 
     try {
       await AuthService.register(result.data);
-      toast.success("Conta criada com sucesso!");
-      navigate("/login");
+      toast.success('Conta criada com sucesso!');
+      navigate('/login');
     } catch (err) {
       if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
         toast.error(err.response.data.message);
       } else {
-        toast.error("Erro inesperado");
+        toast.error('Erro inesperado');
       }
     }
   };
