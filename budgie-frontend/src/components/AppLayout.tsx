@@ -8,12 +8,25 @@ import UserService from '@/services/UserService';
 import type { ApiErrorMessage } from '@/services/types';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { SESSION_EXPIRED_EVENT } from '@/configs/axiosConfig.ts';
 
-// Casca da área autenticada. Busca o usuário uma vez só, em vez de cada página /app/* refazer isso
 export const AppLayout = () => {
   const [userName, setUserName] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleExpired = () => {
+      navigate('/login', { replace: true });
+    };
+
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleExpired);
+
+    return () => {
+      window.removeEventListener(SESSION_EXPIRED_EVENT, handleExpired);
+    };
+  }, [navigate]);
 
   useEffect(() => {
     const loadUser = async () => {
