@@ -12,13 +12,11 @@ import { formatCurrency, formatShortDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import DashboardService, { MOCK_WALLET_ID } from '@/services/DashboardService';
 import type {
-  ApiErrorMessage,
   ApiTransactionResponseDTO,
   ApiWalletSummaryDTO,
 } from '@/services/types';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { toastApiError } from '@/lib/apiErrors.ts';
 
 const DashboardSkeleton = () => (
   <div className="flex flex-col gap-4">
@@ -51,11 +49,7 @@ export const Dashboard = () => {
         setSummary(walletSummary);
         setTransactions(recentTransactions);
       } catch (err) {
-        if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
-          toast.error(err.response.data.message);
-        } else {
-          toast.error('Erro inesperado');
-        }
+        toastApiError(err);
       } finally {
         setIsLoading(false);
       }
@@ -64,7 +58,6 @@ export const Dashboard = () => {
     loadDashboard();
   }, []);
 
-  // A transação só traz categoryId, o nome vem do byCategory do resumo
   const categoryNames = new Map(
     summary?.byCategory.map((category) => [
       category.categoryId,

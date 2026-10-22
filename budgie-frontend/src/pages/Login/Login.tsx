@@ -13,12 +13,11 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { initialValues, loginSchema, type Fields } from './Login.validation';
-import axios from 'axios';
 import { toast } from 'sonner';
 import AuthService from '@/services/AuthService';
 import { session } from '@/services/session';
-import type { ApiErrorMessage } from '@/services/types';
 import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors';
+import { toastApiError } from '@/lib/apiErrors.ts';
 
 export const Login = () => {
   const [fields, setFields] = useState<Fields>(initialValues);
@@ -53,11 +52,7 @@ export const Login = () => {
 
       navigate('/app/dashboard');
     } catch (err) {
-      if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
-        toast.error(err.response.data.message);
-      } else {
-        toast.error('Erro inesperado, contate o admin');
-      }
+      toastApiError(err);
     } finally {
       setIsSubmitting(false);
     }

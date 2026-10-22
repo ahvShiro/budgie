@@ -13,8 +13,6 @@ import {
 } from '@/components/ui/field';
 import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors';
 import AuthService from '@/services/AuthService';
-import type { ApiErrorMessage } from '@/services/types';
-import axios from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -23,6 +21,7 @@ import {
   resetSchema,
   type Fields,
 } from './PasswordReset.validation';
+import { toastApiError } from '@/lib/apiErrors.ts';
 
 export const PasswordReset = () => {
   const { token } = useParams<{ token: string }>();
@@ -58,11 +57,7 @@ export const PasswordReset = () => {
       toast.success(message);
       navigate('/login');
     } catch (err) {
-      if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
-        toast.error(err.response.data.message);
-      } else {
-        toast.error('Erro inesperado');
-      }
+      toastApiError(err);
     }
   };
 

@@ -10,12 +10,11 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import AuthService from '@/services/AuthService';
-import type { ApiErrorMessage } from '@/services/types';
-import axios from 'axios';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { toastApiError } from '@/lib/apiErrors.ts';
 
 const emailSchema = z
   .string()
@@ -46,11 +45,7 @@ export const PasswordRecover = () => {
       });
       toast.success(message, { duration: 10000 });
     } catch (err) {
-      if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
-        toast.error(err.response.data.message);
-      } else {
-        toast.error('Erro inesperado');
-      }
+      toastApiError(err);
     } finally {
       setIsSubmitting(false);
     }

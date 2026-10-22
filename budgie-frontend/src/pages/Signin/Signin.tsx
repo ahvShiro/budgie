@@ -12,13 +12,12 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import AuthService from '@/services/AuthService';
-import type { ApiErrorMessage } from '@/services/types';
-import axios from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { initialValues, signinSchema, type Fields } from './Signin.validation';
 import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors';
+import { toastApiError } from '@/lib/apiErrors.ts';
 
 export const Signin = () => {
   const [fields, setFields] = useState<Fields>(initialValues);
@@ -47,11 +46,7 @@ export const Signin = () => {
       toast.success('Conta criada com sucesso!');
       navigate('/login');
     } catch (err) {
-      if (axios.isAxiosError<ApiErrorMessage>(err) && err.response) {
-        toast.error(err.response.data.message);
-      } else {
-        toast.error('Erro inesperado');
-      }
+      toastApiError(err);
     }
   };
 
