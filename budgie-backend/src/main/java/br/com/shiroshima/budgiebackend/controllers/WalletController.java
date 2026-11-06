@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.shiroshima.budgiebackend.dtos.wallet.WalletListingDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
@@ -33,7 +34,7 @@ public class WalletController {
     }
 
     @GetMapping
-    public ResponseEntity<List<WalletResponseDTO>> getWallets() {
+    public ResponseEntity<List<WalletListingDTO>> getWallets() {
         return ResponseEntity.ok(service.getWallets());
     }
 

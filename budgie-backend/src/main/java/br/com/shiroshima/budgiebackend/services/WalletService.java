@@ -1,12 +1,16 @@
 package br.com.shiroshima.budgiebackend.services;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import br.com.shiroshima.budgiebackend.dtos.wallet.WalletListingDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
@@ -19,6 +23,7 @@ import br.com.shiroshima.budgiebackend.models.enums.WalletRole;
 import br.com.shiroshima.budgiebackend.repositories.TransactionRepository;
 import br.com.shiroshima.budgiebackend.repositories.WalletMemberRepository;
 import br.com.shiroshima.budgiebackend.repositories.WalletRepository;
+import br.com.shiroshima.budgiebackend.repositories.projections.WalletBalance;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -72,10 +77,35 @@ public class WalletService {
         return mapper.toResponse(newWallet);
     }
 
-    public List<WalletResponseDTO> getWallets() {
-        return walletMemberRepo.findByUserIdAndWalletActive(userService.fetchAuthenticatedUser().getId(), true)
+    public List<WalletListingDTO> getWallets() {
+        List<Wallet> wallets = walletMemberRepo.findByUserIdAndWalletActive(userService.fetchAuthenticatedUser().getId(), true)
         .stream()
-        .map(obj -> mapper.toResponse(obj.getWallet()))
+        .map(WalletMember::getWallet)
+        .toList();
+
+        if (wallets.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> walletIds = wallets.stream().map(Wallet::getId).toList();
+
+        Map<Long, List<String>> membersByWallet = walletMemberRepo.findByWalletIdIn(walletIds)
+        .stream()
+        .collect(Collectors.groupingBy(
+            member -> member.getWallet().getId(),
+            Collectors.mapping(member -> member.getUser().getName(), Collectors.toList())
+        ));
+
+        Map<Long, BigDecimal> balanceByWallet = transactionRepo.sumBalanceByWalletIds(walletIds)
+        .stream()
+        .collect(Collectors.toMap(WalletBalance::getWalletId, WalletBalance::getBalance));
+
+        return wallets.stream()
+        .map(wallet -> mapper.toListing(
+            wallet,
+            membersByWallet.getOrDefault(wallet.getId(), List.of()),
+            balanceByWallet.getOrDefault(wallet.getId(), BigDecimal.ZERO)
+        ))
         .toList();
     }
 

@@ -10,8 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 import br.com.shiroshima.budgiebackend.models.Transaction;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
+import br.com.shiroshima.budgiebackend.repositories.projections.WalletBalance;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
@@ -38,6 +40,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             Pageable pageable);
+
+    @Query("""
+            SELECT t.wallet.id AS walletId,
+                   SUM(CASE WHEN t.type = br.com.shiroshima.budgiebackend.models.enums.TransactionType.INCOME
+                            THEN t.value ELSE -t.value END) AS balance
+            FROM Transaction t
+            WHERE t.wallet.id IN :walletIds
+              AND t.active = true
+            GROUP BY t.wallet.id
+            """)
+    List<WalletBalance> sumBalanceByWalletIds(@Param("walletIds") List<Long> walletIds);
 
     @Modifying(flushAutomatically = true)
     @Query("UPDATE Transaction t SET t.active = false WHERE t.wallet.id = :walletId AND t.active = true")

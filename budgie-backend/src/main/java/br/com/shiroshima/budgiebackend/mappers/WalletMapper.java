@@ -1,7 +1,11 @@
 package br.com.shiroshima.budgiebackend.mappers;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
+import br.com.shiroshima.budgiebackend.dtos.wallet.WalletListingDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
@@ -28,6 +32,16 @@ public class WalletMapper {
             wallet.getCreatedAt(),
             wallet.getUpdatedAt(),
             wallet.isActive()
+        );
+    }
+
+    public WalletListingDTO toListing(Wallet wallet, List<String> members, BigDecimal balance) {
+        return new WalletListingDTO(
+            wallet.getId(),
+            wallet.getName(),
+            wallet.getDescription(),
+            members,
+            balance
         );
     }
 

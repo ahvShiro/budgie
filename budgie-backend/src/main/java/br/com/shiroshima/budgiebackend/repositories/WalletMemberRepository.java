@@ -20,4 +20,7 @@ public interface WalletMemberRepository extends JpaRepository<WalletMember, Long
 
     @Query("SELECT m FROM WalletMember m JOIN FETCH m.wallet w WHERE m.user.id = :userId AND w.active = :active")
     List<WalletMember> findByUserIdAndWalletActive(@Param("userId") Long userId, @Param("active") Boolean active);
+
+    @Query("SELECT m FROM WalletMember m JOIN FETCH m.user WHERE m.wallet.id IN :walletIds ORDER BY m.createdAt")
+    List<WalletMember> findByWalletIdIn(@Param("walletIds") List<Long> walletIds);
 }
