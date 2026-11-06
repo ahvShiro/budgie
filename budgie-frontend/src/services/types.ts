@@ -75,3 +75,10 @@ export interface ApiWalletSummaryDTO {
   byCategory: ApiCategorySummaryDTO[];
   byMonth: ApiMonthSummaryDTO[];
 }
+
+export interface ApiWalletListingDTO {
+  id: number;
+  description: string | null;
+  members: string[];
+  balance: number;
+}
