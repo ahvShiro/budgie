@@ -9,47 +9,38 @@ import {
 import { formatCurrency } from '@/lib/formatters.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Plus } from 'lucide-react';
+import type { ApiWalletListingDTO } from '@/services/types.ts';
+import { useEffect, useState } from 'react';
+import { toastApiError } from '@/lib/apiErrors.ts';
+import WalletService from '@/services/WalletService.ts';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@/components/ui/empty.tsx';
 
-// Mock até o backend ter WalletController. Membros guardam o nome, a inicial é derivada na hora de renderizar
-const MOCK_WALLETS = [
-  {
-    id: 1,
-    name: 'Pessoal',
-    description: 'Gastos do dia a dia',
-    members: ['Arthur'],
-    balance: 1842.5,
-  },
-  {
-    id: 2,
-    name: 'Casa',
-    description: 'Aluguel, contas e mercado dividido',
-    members: ['Arthur', 'Beatriz'],
-    balance: 3270.0,
-  },
-  {
-    id: 3,
-    name: 'Viagem Floripa',
-    description: 'Vaquinha da viagem de fim de ano',
-    members: ['Arthur', 'Beatriz', 'Carlos', 'Diana'],
-    balance: 1150.75,
-  },
-  {
-    id: 4,
-    name: 'Reserva de emergência',
-    description: '',
-    members: ['Arthur'],
-    balance: 8500.0,
-  },
-  {
-    id: 5,
-    name: 'República',
-    description: 'Internet e faxina',
-    members: ['Arthur', 'Eduardo', 'Felipe'],
-    balance: -120.4,
-  },
-];
+const SKELETON_ROWS = [0, 1, 2, 3, 4];
 
 export const WalletListing = () => {
+  const [wallets, setWallets] = useState<ApiWalletListingDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadWallets = async () => {
+      try {
+        setWallets(await WalletService.getWallets());
+      } catch (err) {
+        toastApiError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWallets();
+  }, []);
+
   return (
     <div>
       <main className="flex flex-1 flex-col gap-4 p-6">
@@ -75,19 +66,47 @@ export const WalletListing = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {MOCK_WALLETS.map((wallet) => (
-                <TableRow key={wallet.id}>
-                  <TableCell className="font-medium">{wallet.name}</TableCell>
-                  <TableCell>{wallet.description || '—'}</TableCell>
-                  <TableCell>
-                    {wallet.members.map((member) => `(${member[0]})`).join(' ')}
+              {isLoading &&
+                SKELETON_ROWS.map((i) => (
+                  <TableRow key={i}>
+                    <TableCell colSpan={5}>
+                      <Skeleton className="h-6 w-full" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {!isLoading &&
+                wallets.map((wallet) => (
+                  <TableRow key={wallet.id}>
+                    <TableCell className="font-medium">{wallet.name}</TableCell>
+                    <TableCell>{wallet.description || '—'}</TableCell>
+                    <TableCell>
+                      {wallet.members
+                        .map((member) => `(${member[0]})`)
+                        .join(' ')}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(wallet.balance)}
+                    </TableCell>
+                    <TableCell className="w-px text-center"> ... </TableCell>
+                  </TableRow>
+                ))}
+
+              {!isLoading && wallets.length === 0 && (
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={5}>
+                    <Empty>
+                      <EmptyHeader>
+                        <EmptyTitle>Nenhuma carteira ainda</EmptyTitle>
+                        <EmptyDescription>
+                          Clique no botão <b>"+ Criar carteira nova"</b> para
+                          criar carteiras para gestão de despesas.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
                   </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(wallet.balance)}
-                  </TableCell>
-                  <TableCell className="w-px text-center"> ... </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </div>

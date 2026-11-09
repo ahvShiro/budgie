@@ -78,6 +78,7 @@ export interface ApiWalletSummaryDTO {
 
 export interface ApiWalletListingDTO {
   id: number;
+  name: string;
   description: string | null;
   members: string[];
   balance: number;
