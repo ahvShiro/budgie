@@ -8,13 +8,19 @@ import {
 } from '@/components/ui/table.tsx';
 import { formatCurrency, getInitial } from '@/lib/formatters.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { Plus } from 'lucide-react';
+import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx';
 import type { ApiWalletListingDTO } from '@/services/types.ts';
 import { useCallback, useEffect, useState } from 'react';
 import { toastApiError } from '@/lib/apiErrors.ts';
 import WalletService from '@/services/WalletService.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { CreateWalletDialog } from '@/components/CreateWalletDialog.tsx';
+import { CreateWalletDialog } from '@/components/wallet/CreateWalletDialog.tsx';
 import {
   Empty,
   EmptyDescription,
@@ -32,6 +38,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx';
+import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
 const MAX_AVATARS = 3;
@@ -40,6 +47,8 @@ export const WalletListing = () => {
   const [wallets, setWallets] = useState<ApiWalletListingDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [walletToDelete, setWalletToDelete] =
+    useState<ApiWalletListingDTO | null>(null);
 
   // Fora do useEffect pq o modal reusa pra recarregar depois de criar.
   // isLoading só começa true, então o refetch não pisca o skeleton
@@ -128,7 +137,30 @@ export const WalletListing = () => {
                     <TableCell className="text-right">
                       {formatCurrency(wallet.balance)}
                     </TableCell>
-                    <TableCell className="w-px text-center"> ... </TableCell>
+                    <TableCell className="w-px text-center">
+                      <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="secondary"
+                            size="icon-sm"
+                            aria-label={`Ações da carteira ${wallet.name}`}
+                          >
+                            <MoreHorizontal />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>
+                            <Pencil /> Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onSelect={() => setWalletToDelete(wallet)}
+                          >
+                            <Trash2 /> Deletar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))}
 
@@ -156,6 +188,12 @@ export const WalletListing = () => {
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         onCreated={loadWallets}
+      />
+
+      <DeleteWalletDialog
+        wallet={walletToDelete}
+        onOpenChange={(open) => !open && setWalletToDelete(null)}
+        onDeleted={loadWallets}
       />
     </div>
   );

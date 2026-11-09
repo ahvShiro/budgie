@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button.tsx';
 import {
   Dialog,
   DialogClose,
@@ -7,18 +7,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog.tsx';
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from '@/components/ui/field.tsx';
+import { Input } from '@/components/ui/input.tsx';
+import { Textarea } from '@/components/ui/textarea.tsx';
 import { toastApiError } from '@/lib/apiErrors.ts';
-import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors';
+import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors.ts';
 import WalletService from '@/services/WalletService.ts';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -26,7 +26,7 @@ import {
   initialValues,
   walletSchema,
   type Fields,
-} from './CreateWalletDialog.validation';
+} from './CreateWalletDialog.validation.ts';
 
 interface CreateWalletDialogProps {
   open: boolean;

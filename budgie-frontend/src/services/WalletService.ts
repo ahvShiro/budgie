@@ -17,6 +17,10 @@ class WalletService {
     const response = await api.get<ApiWalletListingDTO[]>(this.endpoint);
     return response.data;
   }
+
+  async deleteWallet(id: number) {
+    await api.delete<void>(`${this.endpoint}/${id}`);
+  }
 }
 
 export default new WalletService();
