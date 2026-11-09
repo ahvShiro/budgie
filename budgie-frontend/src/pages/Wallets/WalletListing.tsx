@@ -10,10 +10,11 @@ import { formatCurrency } from '@/lib/formatters.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Plus } from 'lucide-react';
 import type { ApiWalletListingDTO } from '@/services/types.ts';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toastApiError } from '@/lib/apiErrors.ts';
 import WalletService from '@/services/WalletService.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { CreateWalletDialog } from '@/components/CreateWalletDialog.tsx';
 import {
   Empty,
   EmptyDescription,
@@ -26,20 +27,27 @@ const SKELETON_ROWS = [0, 1, 2, 3, 4];
 export const WalletListing = () => {
   const [wallets, setWallets] = useState<ApiWalletListingDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  // Fora do useEffect pq o modal reusa pra recarregar depois de criar.
+  // isLoading só começa true, então o refetch não pisca o skeleton
+  const loadWallets = useCallback(async () => {
+    try {
+      setWallets(await WalletService.getWallets());
+    } catch (err) {
+      toastApiError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadWallets = async () => {
-      try {
-        setWallets(await WalletService.getWallets());
-      } catch (err) {
-        toastApiError(err);
-      } finally {
-        setIsLoading(false);
-      }
+    const loadOnMount = async () => {
+      await loadWallets();
     };
 
-    loadWallets();
-  }, []);
+    loadOnMount();
+  }, [loadWallets]);
 
   return (
     <div>
@@ -49,7 +57,7 @@ export const WalletListing = () => {
             Suas carteiras
           </h1>
 
-          <Button>
+          <Button onClick={() => setIsCreateOpen(true)}>
             <Plus /> Criar carteira nova
           </Button>
         </div>
@@ -111,6 +119,12 @@ export const WalletListing = () => {
           </Table>
         </div>
       </main>
+
+      <CreateWalletDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onCreated={loadWallets}
+      />
     </div>
   );
 };

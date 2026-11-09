@@ -20,6 +20,11 @@ export interface ResetPasswordDTO {
   newPasswordConfirmation: string;
 }
 
+export interface WalletRegisterDTO {
+  name: string;
+  description: string;
+}
+
 export interface ApiMessageDTO {
   message: string;
 }
@@ -82,4 +87,14 @@ export interface ApiWalletListingDTO {
   description: string | null;
   members: string[];
   balance: number;
+}
+
+export interface ApiWalletResponseDTO {
+  id: number;
+  ownerId: number;
+  name: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+  active: boolean;
 }
