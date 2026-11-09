@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { getInitial } from '@/lib/formatters';
 import { session } from '@/services/session';
 import {
   ArrowLeftRight,
@@ -43,7 +44,7 @@ export const AppSidebar = ({ userName }: AppSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const initial = userName.trim().charAt(0).toUpperCase() || '?';
+  const initial = getInitial(userName);
 
   const handleLogout = () => {
     session.clearToken();

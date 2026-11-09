@@ -4,6 +4,7 @@ import { Login } from './pages/Login/Login';
 import { PasswordRecover } from './pages/PasswordRecover';
 import { PasswordReset } from './pages/PasswordReset/PasswordReset';
 import { Toaster } from 'sonner';
+import { TooltipProvider } from '@/components/ui/tooltip.tsx';
 import { NotFound } from './pages/NotFound/NotFound';
 import { Support } from '@/pages/Support/Support.tsx';
 import { Dashboard } from './pages/Dashboard/Dashboard';
@@ -17,7 +18,7 @@ import { CategoryListing } from '@/pages/Categories/CategoryListing.tsx';
 function App() {
   // TODO orquestrar páginas e adicionar fluxo
   return (
-    <>
+    <TooltipProvider>
       <BrowserRouter>
         <Routes>
           <Route
@@ -51,7 +52,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster richColors />
-    </>
+    </TooltipProvider>
   );
 }
 

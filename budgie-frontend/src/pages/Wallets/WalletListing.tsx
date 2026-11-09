@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table.tsx';
-import { formatCurrency } from '@/lib/formatters.ts';
+import { formatCurrency, getInitial } from '@/lib/formatters.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Plus } from 'lucide-react';
 import type { ApiWalletListingDTO } from '@/services/types.ts';
@@ -21,8 +21,20 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from '@/components/ui/empty.tsx';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+} from '@/components/ui/avatar.tsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip.tsx';
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
+const MAX_AVATARS = 3;
 
 export const WalletListing = () => {
   const [wallets, setWallets] = useState<ApiWalletListingDTO[]>([]);
@@ -89,9 +101,29 @@ export const WalletListing = () => {
                     <TableCell className="font-medium">{wallet.name}</TableCell>
                     <TableCell>{wallet.description || '—'}</TableCell>
                     <TableCell>
-                      {wallet.members
-                        .map((member) => `(${member[0]})`)
-                        .join(' ')}
+                      <AvatarGroup>
+                        {/* Se o objeto futuramente trazer o ID também, dá pra colocar na key */}
+                        {/* Cpa que da pra componentizar isso, mas tem que ver onde mais usaria esse elemento de vários usuários*/}
+                        {wallet.members
+                          .slice(0, MAX_AVATARS)
+                          .map((member, i) => (
+                            <Tooltip key={i}>
+                              <TooltipTrigger asChild>
+                                <Avatar className="size-6">
+                                  <AvatarFallback>
+                                    {getInitial(member)}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </TooltipTrigger>
+                              <TooltipContent>{member}</TooltipContent>
+                            </Tooltip>
+                          ))}
+                        {wallet.members.length > MAX_AVATARS && (
+                          <AvatarGroupCount className="size-6 text-xs">
+                            +{wallet.members.length - MAX_AVATARS}
+                          </AvatarGroupCount>
+                        )}
+                      </AvatarGroup>
                     </TableCell>
                     <TableCell className="text-right">
                       {formatCurrency(wallet.balance)}

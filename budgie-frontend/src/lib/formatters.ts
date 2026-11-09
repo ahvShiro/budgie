@@ -26,3 +26,8 @@ export function formatShortDate(date: string) {
 export function formatMonthLabel(month: string) {
   return monthLabelFormatter.format(new Date(`${month}-01T00:00:00`));
 }
+
+// Inicial pro AvatarFallback, '?' se o nome vier vazio
+export function getInitial(name: string) {
+  return name.trim().charAt(0).toUpperCase() || '?';
+}
