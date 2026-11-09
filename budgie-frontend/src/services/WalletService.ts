@@ -3,6 +3,7 @@ import type {
   ApiWalletListingDTO,
   ApiWalletResponseDTO,
   WalletRegisterDTO,
+  WalletUpdateDTO,
 } from '@/services/types';
 
 class WalletService {
@@ -15,6 +16,14 @@ class WalletService {
 
   async getWallets() {
     const response = await api.get<ApiWalletListingDTO[]>(this.endpoint);
+    return response.data;
+  }
+
+  async updateWallet(id: number, data: WalletUpdateDTO) {
+    const response = await api.put<ApiWalletResponseDTO>(
+      `${this.endpoint}/${id}`,
+      data
+    );
     return response.data;
   }
 

@@ -20,7 +20,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toastApiError } from '@/lib/apiErrors.ts';
 import WalletService from '@/services/WalletService.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { CreateWalletDialog } from '@/components/wallet/CreateWalletDialog.tsx';
+import { WalletFormDialog } from '@/components/wallet/WalletFormDialog.tsx';
 import {
   Empty,
   EmptyDescription,
@@ -47,6 +47,9 @@ export const WalletListing = () => {
   const [wallets, setWallets] = useState<ApiWalletListingDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [walletToEdit, setWalletToEdit] = useState<ApiWalletListingDTO | null>(
+    null
+  );
   const [walletToDelete, setWalletToDelete] =
     useState<ApiWalletListingDTO | null>(null);
 
@@ -149,7 +152,9 @@ export const WalletListing = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onSelect={() => setWalletToEdit(wallet)}
+                          >
                             <Pencil /> Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem
@@ -184,10 +189,18 @@ export const WalletListing = () => {
         </div>
       </main>
 
-      <CreateWalletDialog
+      <WalletFormDialog
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
-        onCreated={loadWallets}
+        onSaved={loadWallets}
+      />
+
+      <WalletFormDialog
+        key={walletToEdit?.id ?? 'fechado'}
+        open={walletToEdit !== null}
+        wallet={walletToEdit}
+        onOpenChange={(open) => !open && setWalletToEdit(null)}
+        onSaved={loadWallets}
       />
 
       <DeleteWalletDialog

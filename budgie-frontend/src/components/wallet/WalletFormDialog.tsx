@@ -20,30 +20,38 @@ import { Textarea } from '@/components/ui/textarea.tsx';
 import { toastApiError } from '@/lib/apiErrors.ts';
 import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors.ts';
 import WalletService from '@/services/WalletService.ts';
+import type { ApiWalletListingDTO } from '@/services/types.ts';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import {
   initialValues,
   walletSchema,
   type Fields,
-} from './CreateWalletDialog.validation.ts';
+} from './WalletFormDialog.validation.ts';
 
-interface CreateWalletDialogProps {
+interface WalletFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
+  onSaved: () => void;
+  wallet?: ApiWalletListingDTO | null;
 }
 
-export const CreateWalletDialog = ({
+export const WalletFormDialog = ({
   open,
   onOpenChange,
-  onCreated,
-}: CreateWalletDialogProps) => {
-  const [fields, setFields] = useState<Fields>(initialValues);
+  onSaved,
+  wallet,
+}: WalletFormDialogProps) => {
+  const isEditing = !!wallet;
+
+  const [fields, setFields] = useState<Fields>(
+    wallet
+      ? { name: wallet.name, description: wallet.description ?? '' }
+      : initialValues
+  );
   const [fieldErrors, setFieldErrors] = useState<FieldErrors<Fields>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Limpa o form ao fechar pra não reabrir com o lixo da tentativa anterior
   const handleOpenChange = (nextOpen: boolean) => {
     if (isSubmitting) return;
 
@@ -76,11 +84,19 @@ export const CreateWalletDialog = ({
     setIsSubmitting(true);
 
     try {
-      await WalletService.createWallet(result.data);
-      toast.success('Carteira criada com sucesso!');
+      if (wallet) {
+        await WalletService.updateWallet(wallet.id, {
+          ...result.data,
+          active: true,
+        });
+        toast.success('Carteira atualizada com sucesso!');
+      } else {
+        await WalletService.createWallet(result.data);
+        toast.success('Carteira criada com sucesso!');
+      }
       setFields(initialValues);
       onOpenChange(false);
-      onCreated();
+      onSaved();
     } catch (err) {
       toastApiError(err);
     } finally {
@@ -93,9 +109,13 @@ export const CreateWalletDialog = ({
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <DialogHeader>
-            <DialogTitle>Nova carteira</DialogTitle>
+            <DialogTitle>
+              {isEditing ? 'Editar carteira' : 'Nova carteira'}
+            </DialogTitle>
             <DialogDescription>
-              Crie uma carteira para organizar suas receitas e despesas.
+              {isEditing
+                ? 'Altere o nome ou a descrição da carteira.'
+                : 'Crie uma carteira para organizar suas receitas e despesas.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -145,7 +165,13 @@ export const CreateWalletDialog = ({
               </Button>
             </DialogClose>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Criando...' : 'Criar carteira'}
+              {isEditing
+                ? isSubmitting
+                  ? 'Salvando...'
+                  : 'Salvar alterações'
+                : isSubmitting
+                  ? 'Criando...'
+                  : 'Criar carteira'}
             </Button>
           </DialogFooter>
         </form>

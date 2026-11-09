@@ -25,6 +25,12 @@ export interface WalletRegisterDTO {
   description: string;
 }
 
+export interface WalletUpdateDTO {
+  name: string;
+  description: string;
+  active: boolean;
+}
+
 export interface ApiMessageDTO {
   message: string;
 }

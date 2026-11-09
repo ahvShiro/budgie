@@ -14,7 +14,7 @@ import WalletService from '@/services/WalletService.ts';
 import { toast } from 'sonner';
 import { toastApiError } from '@/lib/apiErrors.ts';
 
-interface CreateWalletDialogProps {
+interface DeleteWalletDialogProps {
   wallet: ApiWalletListingDTO | null;
   onOpenChange: (open: boolean) => void;
   onDeleted: () => void;
@@ -24,7 +24,7 @@ export const DeleteWalletDialog = ({
   wallet,
   onOpenChange,
   onDeleted,
-}: CreateWalletDialogProps) => {
+}: DeleteWalletDialogProps) => {
   const [isDeleteing, setIsDeleting] = useState(false);
 
   const handleOpenChange = (nextOpen: boolean) => {
