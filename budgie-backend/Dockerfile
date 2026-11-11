@@ -21,7 +21,3 @@ COPY --from=build /app/target/budgie-backend-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 
 CMD ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "target/budgie-backend-0.0.1-SNAPSHOT.jar", "--spring.profiles.active=prod"]
