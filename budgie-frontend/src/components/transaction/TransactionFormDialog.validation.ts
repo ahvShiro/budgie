@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { todayLocalDateString } from '@/lib/dates.ts';
+import { nowLocalDateTimeString } from '@/lib/dates.ts';
 
 export const transactionSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE'], 'Campo tipo é obrigatório'),
@@ -19,7 +19,7 @@ export const transactionSchema = z.object({
     .string()
     .min(1, 'Campo data é obrigatório')
     .refine(
-      (v) => v <= todayLocalDateString(),
+      (v) => v <= nowLocalDateTimeString(),
       'Campo data não pode ser no futuro'
     ),
 
@@ -32,6 +32,6 @@ export const initialValues: Fields = {
   type: 'EXPENSE',
   value: '',
   description: '',
-  date: todayLocalDateString(),
+  date: nowLocalDateTimeString(),
   categoryId: null,
 };

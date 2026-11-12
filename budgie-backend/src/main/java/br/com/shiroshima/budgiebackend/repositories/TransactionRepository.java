@@ -12,7 +12,7 @@ import br.com.shiroshima.budgiebackend.models.Transaction;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 import br.com.shiroshima.budgiebackend.repositories.projections.WalletBalance;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,15 +30,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
               AND t.active = true
               AND (:type IS NULL OR t.type = :type)
               AND (:categoryId IS NULL OR c.id = :categoryId)
-                          AND (:startDate IS NULL OR t.date >= :startDate)
-                          AND (:endDate IS NULL OR t.date <= :endDate)
+              AND (CAST(:startAt AS LocalDateTime) IS NULL OR t.date >= :startAt)
+              AND (CAST(:endAt AS LocalDateTime) IS NULL OR t.date < :endAt)
                         """)
     Page<Transaction> search(
             @Param("walletId") Long walletId,
             @Param("type") TransactionType type,
             @Param("categoryId") Long categoryId,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt,
             Pageable pageable);
 
     @Query("""

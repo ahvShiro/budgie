@@ -1,6 +1,7 @@
 package br.com.shiroshima.budgiebackend.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -81,7 +82,10 @@ public class TransactionService {
     public Page<TransactionResponseDTO> getTransactions(Long walletId, TransactionType type, Long categoryId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         fetchAccessibleWallet(walletId);
 
-        return repo.search(walletId, type, categoryId, startDate, endDate, pageable).map(mapper::toResponse);
+        LocalDateTime startAt = startDate != null ? startDate.atStartOfDay() : null;
+        LocalDateTime endAt = endDate != null ? endDate.plusDays(1).atStartOfDay() : null;
+
+        return repo.search(walletId, type, categoryId, startAt, endAt, pageable).map(mapper::toResponse);
     }
 
     public TransactionResponseDTO getTransaction(Long walletId, Long id) {

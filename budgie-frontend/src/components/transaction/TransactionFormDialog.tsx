@@ -31,11 +31,8 @@ import {
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { toastApiError } from '@/lib/apiErrors.ts';
-import {
-  parseLocalDate,
-  toLocalDateString,
-  todayLocalDateString,
-} from '@/lib/dates.ts';
+import { Input } from '@/components/ui/input.tsx';
+import { nowLocalDateTimeString, toLocalDateTimeString } from '@/lib/dates.ts';
 import { formatDate } from '@/lib/formatters.ts';
 import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors.ts';
 import TransactionService from '@/services/TransactionService.ts';
@@ -68,7 +65,7 @@ interface TransactionFormDialogProps {
 
 const freshValues = (): Fields => ({
   ...initialValues,
-  date: todayLocalDateString(),
+  date: nowLocalDateTimeString(),
 });
 
 export const TransactionFormDialog = ({
@@ -90,7 +87,7 @@ export const TransactionFormDialog = ({
           type: transaction.type,
           value: transaction.value.toString(),
           description: transaction.description ?? '',
-          date: transaction.date,
+          date: toLocalDateTimeString(new Date(transaction.date)),
           categoryId: transaction.categoryId,
         }
       : freshValues
@@ -127,11 +124,23 @@ export const TransactionFormDialog = ({
     }));
   };
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (!date) return;
-    setFields((prev) => ({ ...prev, date: toLocalDateString(date) }));
+  // Calendar troca só o dia e o input de hora só a hora, um não apaga o outro
+  const handleDateSelect = (day: Date | undefined) => {
+    if (!day) return;
+    const next = new Date(fields.date);
+    next.setFullYear(day.getFullYear(), day.getMonth(), day.getDate());
+    setFields((prev) => ({ ...prev, date: toLocalDateTimeString(next) }));
     setFieldErrors((prev) => ({ ...prev, date: undefined }));
     setIsCalendarOpen(false);
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.value) return;
+    const [hours, minutes] = e.target.value.split(':').map(Number);
+    const next = new Date(fields.date);
+    next.setHours(hours, minutes);
+    setFields((prev) => ({ ...prev, date: toLocalDateTimeString(next) }));
+    setFieldErrors((prev) => ({ ...prev, date: undefined }));
   };
 
   const handleSubmit = async (e: React.SubmitEvent) => {
@@ -211,72 +220,86 @@ export const TransactionFormDialog = ({
               </ToggleGroup>
             </Field>
 
-            <Field>
-              <FieldLabel htmlFor="value">Valor</FieldLabel>
-              <InputGroup>
-                <InputGroupAddon>
-                  <InputGroupText>R$</InputGroupText>
-                </InputGroupAddon>
-                <InputGroupInput
-                  type="number"
-                  id="value"
-                  name="value"
-                  step="0.01"
-                  min="0.01"
-                  inputMode="decimal"
-                  placeholder="0,00"
-                  aria-invalid={!!fieldErrors.value}
-                  value={fields.value}
-                  onChange={handleChange}
-                />
-              </InputGroup>
-              <FieldError
-                errors={
-                  fieldErrors.value ? [{ message: fieldErrors.value }] : []
-                }
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="date">Data</FieldLabel>
-              <Popover
-                open={isCalendarOpen}
-                onOpenChange={setIsCalendarOpen}
-                modal
-              >
-                <PopoverTrigger asChild>
-                  <Button
-                    id="date"
-                    type="button"
-                    variant="outline"
-                    className="w-full justify-start font-normal"
-                    aria-invalid={!!fieldErrors.date}
-                  >
-                    <CalendarIcon />
-                    {fields.date
-                      ? formatDate(parseLocalDate(fields.date))
-                      : 'Selecione uma data'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    locale={ptBR}
-                    selected={
-                      fields.date ? parseLocalDate(fields.date) : undefined
-                    }
-                    defaultMonth={
-                      fields.date ? parseLocalDate(fields.date) : undefined
-                    }
-                    disabled={{ after: new Date() }}
-                    onSelect={handleDateSelect}
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel htmlFor="value">Valor</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <InputGroupText>R$</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    type="number"
+                    id="value"
+                    name="value"
+                    step="0.01"
+                    min="0.01"
+                    inputMode="decimal"
+                    placeholder="0,00"
+                    aria-invalid={!!fieldErrors.value}
+                    value={fields.value}
+                    onChange={handleChange}
                   />
-                </PopoverContent>
-              </Popover>
-              <FieldError
-                errors={fieldErrors.date ? [{ message: fieldErrors.date }] : []}
-              />
-            </Field>
+                </InputGroup>
+                <FieldError
+                  errors={
+                    fieldErrors.value ? [{ message: fieldErrors.value }] : []
+                  }
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="date">Data e hora</FieldLabel>
+                <div className="flex gap-2">
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                    modal
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        id="date"
+                        type="button"
+                        variant="outline"
+                        className="flex-1 justify-start font-normal"
+                        aria-invalid={!!fieldErrors.date}
+                      >
+                        <CalendarIcon />
+                        {fields.date
+                          ? formatDate(new Date(fields.date))
+                          : 'Selecione uma data'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        locale={ptBR}
+                        selected={
+                          fields.date ? new Date(fields.date) : undefined
+                        }
+                        defaultMonth={
+                          fields.date ? new Date(fields.date) : undefined
+                        }
+                        disabled={{ after: new Date() }}
+                        onSelect={handleDateSelect}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Input
+                    type="time"
+                    aria-label="Hora"
+                    className="w-auto"
+                    aria-invalid={!!fieldErrors.date}
+                    value={fields.date.slice(11, 16)}
+                    onChange={handleTimeChange}
+                  />
+                </div>
+                <FieldError
+                  errors={
+                    fieldErrors.date ? [{ message: fieldErrors.date }] : []
+                  }
+                />
+              </Field>
+            </div>
 
             <Field>
               <FieldLabel htmlFor="category">Categoria</FieldLabel>

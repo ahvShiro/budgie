@@ -1,7 +1,7 @@
 package br.com.shiroshima.budgiebackend.dtos.transaction;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 import jakarta.validation.constraints.DecimalMin;
@@ -25,5 +25,5 @@ public record TransactionRegisterDTO(
 
     @NotNull(message = "{date.shouldrequired}")
     @PastOrPresent(message = "{date.shouldpastorpresent}")
-    LocalDate date
+    LocalDateTime date
 ) {}

@@ -19,9 +19,8 @@ export function formatCurrency(value: number) {
   return currencyFormatter.format(value);
 }
 
-// Recebe o LocalDate do backend ("2026-08-04")
 export function formatShortDate(date: string) {
-  return shortDateFormatter.format(new Date(`${date}T00:00:00`));
+  return shortDateFormatter.format(new Date(date));
 }
 
 export function formatDate(date: Date) {

@@ -1,7 +1,6 @@
 package br.com.shiroshima.budgiebackend.models;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -41,7 +40,7 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class Transaction {
 
-    public Transaction(Wallet wallet, Category category, User createdBy, TransactionType type, BigDecimal value, String description, LocalDate date)
+    public Transaction(Wallet wallet, Category category, User createdBy, TransactionType type, BigDecimal value, String description, LocalDateTime date)
     {
         this.wallet = wallet;
         this.category = category;
@@ -86,7 +85,7 @@ public class Transaction {
 
     @NotNull(message = "{date.shouldrequired}")
     @PastOrPresent(message = "{date.shouldpastorpresent}")
-    private LocalDate date;
+    private LocalDateTime date;
 
     @CreatedDate
     @Column(name = "created_at")
