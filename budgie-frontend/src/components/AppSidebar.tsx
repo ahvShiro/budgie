@@ -31,8 +31,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
-  { title: 'Carteiras', url: '/app/carteiras', icon: Wallet },
   { title: 'Transações', url: '/app/transacoes', icon: ArrowLeftRight },
+  { title: 'Carteiras', url: '/app/carteiras', icon: Wallet },
   // { title: 'Categorias', url: '/app/categorias', icon: Tag },
 ];
 
