@@ -7,7 +7,12 @@ Repositório contém duas aplicações independentes:
 - `budgie-backend/` - API REST em Spring Boot
 - `budgie-frontend/` -  SPA em React + TypeScript
 
-Frontend em produção: https://budgie.shiroshima.com.br/
+## Em produção
+
+- Frontend: https://budgie.shiroshima.com.br/
+- API: https://budgie-api.shiroshima.com.br/
+
+Os links de produção são só pra acesso público. Pra desenvolvimento, frontend e API continuam rodando em `localhost` (ver [Como rodar localmente](#como-rodar-localmente)).
 
 ## Arquitetura
 
@@ -180,6 +185,8 @@ VITE_APP_API_BASE_URL=http://localhost:8080
 VITE_SUPPORT_EMAIL=<e-mail de suporte exibido na interface>
 ```
 
+O Vite embute essas variáveis no bundle na hora do `npm run build`, então no deploy elas precisam estar definidas **antes** do build, com `VITE_APP_API_BASE_URL=https://budgie-api.shiroshima.com.br`.
+
 ## Como rodar localmente
 
 ### Backend
@@ -241,7 +248,7 @@ Implementado ponta a ponta (controller + service + repository + mapper + DTOs): 
 
 Falta: `Transaction` tem entidade, repository, mapper, controller e DTOs, mas o service ainda é esqueleto - 4 dos 5 métodos devolvem vazio. Junto com ele ficam pendentes o resumo financeiro (`GET /wallets/{id}/summary`) e as regras de papel EDITOR/VIEWER sobre transações.
 
-No frontend: login, cadastro, recuperação/redefinição de senha, suporte, 404 e dashboard estão prontos e roteados, com proteção de rota (`PrivateRoute`/`PublicRoute`), shell autenticado (`AppLayout` com sidebar) e persistência de sessão em `services/session.ts`. `/app/perfil/senha` ainda é placeholder vazio, e o dashboard consome dados mockados de `DashboardService.ts` no formato das respostas reais. Não há tela para carteiras nem para membros - os endpoints existem e ainda não têm consumidor.
+No frontend: login, cadastro, recuperação/redefinição de senha, suporte, 404 e dashboard estão prontos e roteados, com proteção de rota (`PrivateRoute`/`PublicRoute`), shell autenticado (`AppLayout` com sidebar) e persistência de sessão em `services/session.ts`. `/app/perfil/senha` ainda é placeholder vazio, e o dashboard consome dados mockados de `DashboardService.ts` no formato das respostas reais. A tela de carteiras (`/app/carteiras`) já lista, cria e remove carteiras pela API. Transações estão em andamento, categorias ainda são placeholder, e não há tela para membros - os endpoints existem e ainda não têm consumidor.
 
 ## Decisões de projeto
 
