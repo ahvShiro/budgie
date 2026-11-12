@@ -9,6 +9,10 @@ const shortDateFormatter = new Intl.DateTimeFormat('pt-BR', {
   month: '2-digit',
 });
 
+const longDateFormatter = new Intl.DateTimeFormat('pt-BR', {
+  dateStyle: 'long',
+});
+
 const monthLabelFormatter = new Intl.DateTimeFormat('pt-BR', {
   month: 'short',
 });
@@ -20,6 +24,11 @@ export function formatCurrency(value: number) {
 // Recebe o LocalDate do backend ("2026-08-04")
 export function formatShortDate(date: string) {
   return shortDateFormatter.format(new Date(`${date}T00:00:00`));
+}
+
+// Recebe um Date (ex: o selecionado no Calendar) e devolve "12 de novembro de 2026"
+export function formatLongDate(date: Date) {
+  return longDateFormatter.format(date);
 }
 
 // Recebe o month do summary ("2026-08") e devolve o rótulo do eixo X ("ago.")

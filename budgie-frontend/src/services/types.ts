@@ -69,6 +69,39 @@ export interface ApiTransactionResponseDTO {
   active: boolean;
 }
 
+export interface TransactionRegisterDTO {
+  categoryId: number | null;
+  type: TransactionType;
+  value: number;
+  description: string;
+  date: string;
+}
+
+export interface TransactionUpdateDTO {
+  categoryId: number | null;
+  type: TransactionType;
+  value: number;
+  description: string;
+  date: string;
+}
+
+export interface CategoryRegisterDTO {
+  name: string;
+  transactionType: TransactionType;
+  color: string; // hex sem o '#'
+  icon?: string;
+}
+
+export interface ApiCategoryResponseDTO {
+  id: number;
+  walletId: number;
+  name: string;
+  transactionType: TransactionType;
+  color: string | null; // hex sem o '#'
+  icon: string | null;
+  active: boolean;
+}
+
 export interface ApiPageDTO<T> {
   content: T[];
   totalElements: number;

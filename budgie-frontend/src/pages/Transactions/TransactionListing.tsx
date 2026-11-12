@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/table.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Badge } from '@/components/ui/badge.tsx';
 import {
   Select,
   SelectContent,
@@ -22,22 +21,54 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from '@/components/ui/empty.tsx';
-import { useCallback, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx';
+import { CategoryDot } from '@/components/category/CategoryCombobox.tsx';
+import { TransactionFormDialog } from '@/components/transaction/TransactionFormDialog.tsx';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+} from 'lucide-react';
 import { toastApiError } from '@/lib/apiErrors.ts';
 import { formatCurrency, formatShortDate } from '@/lib/formatters.ts';
 import { cn } from '@/lib/utils.ts';
 import WalletService from '@/services/WalletService.ts';
 import TransactionService from '@/services/TransactionService.ts';
+import CategoryService from '@/services/CategoryService.ts';
 import type {
+  ApiCategoryResponseDTO,
   ApiPageDTO,
   ApiTransactionResponseDTO,
   ApiWalletListingDTO,
 } from '@/services/types.ts';
+import { Link } from 'react-router-dom';
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
 const PAGE_SIZE = 20;
 const SORT = 'date,desc';
+
+interface CategoryCellProps {
+  category?: ApiCategoryResponseDTO;
+}
+
+const CategoryCell = ({ category }: CategoryCellProps) => {
+  if (!category) return '—';
+
+  return (
+    <span className="flex items-center gap-2">
+      <CategoryDot color={category.color} />
+      {category.name}
+    </span>
+  );
+};
 
 export const TransactionListing = () => {
   const [wallets, setWallets] = useState<ApiWalletListingDTO[]>([]);
@@ -45,10 +76,18 @@ export const TransactionListing = () => {
   const [transactions, setTransactions] =
     useState<ApiPageDTO<ApiTransactionResponseDTO> | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
+  const [categories, setCategories] = useState<ApiCategoryResponseDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // const [transactionToEdit, setTransactionToEdit] = useState();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] =
+    useState<ApiTransactionResponseDTO | null>(null);
   // const [transactionToDelete, setTransactionToDelete] = useState();
-  // const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  // Map pra tabela achar a categoria de cada linha sem fazer find() por linha
+  const categoriesById = useMemo(
+    () => new Map(categories.map((c) => [c.id, c])),
+    [categories]
+  );
 
   useEffect(() => {
     const loadWallets = async () => {
@@ -96,6 +135,33 @@ export const TransactionListing = () => {
     loadOnChange();
   }, [selectedWalletId, pageNumber, loadTransactions]);
 
+  // Busca todas as categorias da carteira de uma vez, sem filtro de tipo.
+  // O modal filtra no cliente, aí trocar Entrada/Saída não faz request
+  useEffect(() => {
+    if (selectedWalletId === null) return;
+
+    const loadCategories = async () => {
+      try {
+        setCategories(await CategoryService.getCategories(selectedWalletId));
+      } catch (err) {
+        toastApiError(err);
+      }
+    };
+
+    loadCategories();
+  }, [selectedWalletId]);
+
+  // Categoria criada no combobox entra na lista local, sem refetch
+  const handleCategoryCreated = (category: ApiCategoryResponseDTO) => {
+    setCategories((prev) => [...prev, category]);
+  };
+
+  const handleSaved = () => {
+    if (selectedWalletId !== null) {
+      loadTransactions(selectedWalletId, pageNumber);
+    }
+  };
+
   const handleWalletChange = (value: string) => {
     setSelectedWalletId(Number(value));
     setPageNumber(0);
@@ -111,9 +177,12 @@ export const TransactionListing = () => {
             Suas transações
           </h1>
 
-          {/*<Button onClick={() => setIsCreateOpen(true)}>*/}
-          {/*  <Plus /> Registrar transação*/}
-          {/*</Button>*/}
+          <Button
+            onClick={() => setIsCreateOpen(true)}
+            disabled={selectedWalletId === null}
+          >
+            <Plus /> Registrar transação
+          </Button>
         </div>
 
         {wallets.length > 0 && (
@@ -143,13 +212,14 @@ export const TransactionListing = () => {
                 <TableHead className="w-40">Categoria</TableHead>
                 <TableHead className="w-24">Tipo</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
+                <TableHead className="w-px text-center">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading &&
                 SKELETON_ROWS.map((i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={5}>
+                    <TableCell colSpan={6}>
                       <Skeleton className="h-6 w-full" />
                     </TableCell>
                   </TableRow>
@@ -162,12 +232,17 @@ export const TransactionListing = () => {
                     <TableCell className="font-medium">
                       {transaction.description || '—'}
                     </TableCell>
-                    {/* TODO trocar pelo nome qdo existir o CategoryService no front */}
-                    <TableCell>{transaction.categoryId ?? '—'}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">
-                        {transaction.type === 'INCOME' ? 'Entrada' : 'Saída'}
-                      </Badge>
+                      <CategoryCell
+                        category={
+                          transaction.categoryId !== null
+                            ? categoriesById.get(transaction.categoryId)
+                            : undefined
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {transaction.type === 'INCOME' ? 'Entrada' : 'Saída'}
                     </TableCell>
                     <TableCell
                       className={cn(
@@ -179,19 +254,42 @@ export const TransactionListing = () => {
                     >
                       {formatCurrency(transaction.value)}
                     </TableCell>
+                    <TableCell className="w-px text-center">
+                      <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="secondary"
+                            size="icon-sm"
+                            aria-label="Ações da transação"
+                          >
+                            <MoreHorizontal />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onSelect={() => setTransactionToEdit(transaction)}
+                          >
+                            <Pencil /> Editar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))}
 
               {!isLoading && rows.length === 0 && (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={5}>
+                  <TableCell colSpan={6}>
                     <Empty>
                       <EmptyHeader>
                         {wallets.length === 0 ? (
                           <>
                             <EmptyTitle>Nenhuma carteira ainda</EmptyTitle>
                             <EmptyDescription>
-                              Crie uma carteira na tela de <b>Carteiras</b>{' '}
+                              Crie uma carteira na tela de{' '}
+                              <b className={'underline'}>
+                                <Link to="/app/carteiras">Carteiras</Link>
+                              </b>{' '}
                               antes de registrar transações.
                             </EmptyDescription>
                           </>
@@ -239,6 +337,30 @@ export const TransactionListing = () => {
           )}
         </div>
       </main>
+
+      {selectedWalletId !== null && (
+        <>
+          <TransactionFormDialog
+            open={isCreateOpen}
+            onOpenChange={setIsCreateOpen}
+            onSaved={handleSaved}
+            walletId={selectedWalletId}
+            categories={categories}
+            onCategoryCreated={handleCategoryCreated}
+          />
+
+          <TransactionFormDialog
+            key={transactionToEdit?.id ?? 'fechado'}
+            open={transactionToEdit !== null}
+            transaction={transactionToEdit}
+            onOpenChange={(open) => !open && setTransactionToEdit(null)}
+            onSaved={handleSaved}
+            walletId={selectedWalletId}
+            categories={categories}
+            onCategoryCreated={handleCategoryCreated}
+          />
+        </>
+      )}
     </div>
   );
 };
