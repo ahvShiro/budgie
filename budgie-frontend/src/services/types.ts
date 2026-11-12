@@ -59,11 +59,34 @@ export interface ApiTransactionResponseDTO {
   id: number;
   walletId: number;
   categoryId: number | null;
+  createdById: number;
   type: TransactionType;
   value: number;
   description: string;
   date: string;
   createdAt: string;
+  updatedAt: string;
+  active: boolean;
+}
+
+export interface ApiPageDTO<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+}
+
+export interface TransactionQueryParams {
+  type?: TransactionType;
+  categoryId?: number;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
 }
 
 export interface ApiCategorySummaryDTO {
