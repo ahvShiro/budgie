@@ -156,6 +156,16 @@ export const TransactionListing = () => {
     setCategories((prev) => [...prev, category]);
   };
 
+  const handleCategoryUpdated = (category: ApiCategoryResponseDTO) => {
+    setCategories((prev) =>
+      prev.map((c) => (c.id === category.id ? category : c))
+    );
+  };
+
+  const handleCategoryDeleted = (category: ApiCategoryResponseDTO) => {
+    setCategories((prev) => prev.filter((c) => c.id !== category.id));
+  };
+
   const handleSaved = () => {
     if (selectedWalletId !== null) {
       loadTransactions(selectedWalletId, pageNumber);
@@ -347,6 +357,8 @@ export const TransactionListing = () => {
             walletId={selectedWalletId}
             categories={categories}
             onCategoryCreated={handleCategoryCreated}
+            onCategoryUpdated={handleCategoryUpdated}
+            onCategoryDeleted={handleCategoryDeleted}
           />
 
           <TransactionFormDialog
@@ -358,6 +370,8 @@ export const TransactionListing = () => {
             walletId={selectedWalletId}
             categories={categories}
             onCategoryCreated={handleCategoryCreated}
+            onCategoryUpdated={handleCategoryUpdated}
+            onCategoryDeleted={handleCategoryDeleted}
           />
         </>
       )}

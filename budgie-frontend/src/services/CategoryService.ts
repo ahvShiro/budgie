@@ -2,6 +2,7 @@ import api from '@/configs/axiosConfig.ts';
 import type {
   ApiCategoryResponseDTO,
   CategoryRegisterDTO,
+  CategoryUpdateDTO,
   TransactionType,
 } from '@/services/types';
 
@@ -24,6 +25,18 @@ class CategoryService {
       data
     );
     return response.data;
+  }
+
+  async updateCategory(walletId: number, id: number, data: CategoryUpdateDTO) {
+    const response = await api.put<ApiCategoryResponseDTO>(
+      `${this.endpoint(walletId)}/${id}`,
+      data
+    );
+    return response.data;
+  }
+
+  async deleteCategory(walletId: number, id: number) {
+    await api.delete<void>(`${this.endpoint(walletId)}/${id}`);
   }
 }
 

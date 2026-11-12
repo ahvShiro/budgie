@@ -92,6 +92,14 @@ export interface CategoryRegisterDTO {
   icon?: string;
 }
 
+export interface CategoryUpdateDTO {
+  name: string;
+  transactionType: TransactionType;
+  color: string | null; // hex sem o '#'
+  icon: string | null;
+  active: boolean;
+}
+
 export interface ApiCategoryResponseDTO {
   id: number;
   walletId: number;

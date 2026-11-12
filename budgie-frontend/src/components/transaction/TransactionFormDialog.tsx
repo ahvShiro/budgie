@@ -36,7 +36,7 @@ import {
   toLocalDateString,
   todayLocalDateString,
 } from '@/lib/dates.ts';
-import { formatLongDate } from '@/lib/formatters.ts';
+import { formatDate } from '@/lib/formatters.ts';
 import { toFieldErrors, type FieldErrors } from '@/lib/validationErrors.ts';
 import TransactionService from '@/services/TransactionService.ts';
 import type {
@@ -61,6 +61,8 @@ interface TransactionFormDialogProps {
   walletId: number;
   categories: ApiCategoryResponseDTO[];
   onCategoryCreated: (category: ApiCategoryResponseDTO) => void;
+  onCategoryUpdated: (category: ApiCategoryResponseDTO) => void;
+  onCategoryDeleted: (category: ApiCategoryResponseDTO) => void;
   transaction?: ApiTransactionResponseDTO | null;
 }
 
@@ -76,6 +78,8 @@ export const TransactionFormDialog = ({
   walletId,
   categories,
   onCategoryCreated,
+  onCategoryUpdated,
+  onCategoryDeleted,
   transaction,
 }: TransactionFormDialogProps) => {
   const isEditing = !!transaction;
@@ -250,7 +254,7 @@ export const TransactionFormDialog = ({
                   >
                     <CalendarIcon />
                     {fields.date
-                      ? formatLongDate(parseLocalDate(fields.date))
+                      ? formatDate(parseLocalDate(fields.date))
                       : 'Selecione uma data'}
                   </Button>
                 </PopoverTrigger>
@@ -288,6 +292,8 @@ export const TransactionFormDialog = ({
                   setFields((prev) => ({ ...prev, categoryId }))
                 }
                 onCreated={onCategoryCreated}
+                onUpdated={onCategoryUpdated}
+                onDeleted={onCategoryDeleted}
               />
             </Field>
 
