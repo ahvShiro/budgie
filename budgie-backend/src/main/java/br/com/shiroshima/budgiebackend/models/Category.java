@@ -33,9 +33,9 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 public class Category {
 
-    public Category(User user, String name, TransactionType transactionType, String color, String icon)
+    public Category(Wallet wallet, String name, TransactionType transactionType, String color, String icon)
     {
-        this.user = user;
+        this.wallet = wallet;
         this.name = name; 
         this.transactionType = transactionType;
         this.color = color;
@@ -48,9 +48,9 @@ public class Category {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "wallet_id")
     @NotNull
-    private User user;
+    private Wallet wallet;
 
     @NotBlank(message = "{name.shouldrequired}")
     private String name;

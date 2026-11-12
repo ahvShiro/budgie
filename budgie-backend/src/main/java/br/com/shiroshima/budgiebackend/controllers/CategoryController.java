@@ -24,30 +24,30 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/v1/category")
+@RequestMapping("/api/v1/wallet/{walletId}/category")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService service;
     
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> postCategory(@RequestBody CategoryRegisterDTO entity) {        
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.registerCategory(entity));
+    public ResponseEntity<CategoryResponseDTO> postCategory(@PathVariable Long walletId, @Valid @RequestBody CategoryRegisterDTO entity) {        
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.registerCategory(walletId, entity));
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getCategories(@RequestParam(required = false) TransactionType type) {        
-        return ResponseEntity.ok(service.getCategories(type));
+    public ResponseEntity<List<CategoryResponseDTO>> getCategories(@PathVariable Long walletId, @RequestParam(required = false) TransactionType type) {        
+        return ResponseEntity.ok(service.getCategories(walletId, type));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> putMethodName(@PathVariable Long id, @Valid @RequestBody CategoryUpdateDTO data) {
-        return ResponseEntity.ok(service.updateCategory(id, data));
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long walletId, @PathVariable Long id, @Valid @RequestBody CategoryUpdateDTO data) {
+        return ResponseEntity.ok(service.updateCategory(walletId, id, data));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeCategory(@PathVariable Long id) {
-        service.removeCategory(id);
+    public ResponseEntity<Void> removeCategory(@PathVariable Long walletId, @PathVariable Long id) {
+        service.removeCategory(walletId, id);
         return ResponseEntity.noContent().build();
     }
 

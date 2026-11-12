@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionUpdateDTO;
+import br.com.shiroshima.budgiebackend.exceptions.BusinessException;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.TransactionMapper;
 import br.com.shiroshima.budgiebackend.models.Category;
@@ -39,9 +40,14 @@ public class TransactionService {
             .orElseThrow(() -> new ResourceNotFoundException("Transação não encontrada"));
     }
 
-    private Category getCategoryEvenIfNull(Long categoryId) {
+    private Category getCategoryEvenIfNull(Long walletId, Long categoryId, TransactionType type) {
         if (categoryId == null) return null;
-        return categoryService.fetchById(categoryId);
+
+        Category category = categoryService.fetchById(walletId, categoryId);
+        if (category.getTransactionType() != type) {
+            throw new BusinessException("A categoria não corresponde ao tipo da transação");
+        }
+        return category;
     }
 
     private Wallet fetchAccessibleWallet(Long walletId) {
@@ -65,7 +71,7 @@ public class TransactionService {
         Transaction transaction = mapper.toEntity(
             data, 
             wallet,
-            getCategoryEvenIfNull(data.categoryId()), 
+            getCategoryEvenIfNull(walletId, data.categoryId(), data.type()), 
             userService.fetchAuthenticatedUser()
         );
     
@@ -87,7 +93,7 @@ public class TransactionService {
         fetchOwnedWallet(walletId);
 
         Transaction t = fetchById(walletId, id);
-        mapper.updateEntity(t, data, getCategoryEvenIfNull(data.categoryId()));
+        mapper.updateEntity(t, data, getCategoryEvenIfNull(walletId, data.categoryId(), data.type()));
         
         return mapper.toResponse(repo.save(t));
     }

@@ -4,7 +4,7 @@ import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 
 public record CategoryResponseDTO(
     Long id,
-    Long userId,
+    Long walletId,
     String name,
     TransactionType transactionType,
     String color,

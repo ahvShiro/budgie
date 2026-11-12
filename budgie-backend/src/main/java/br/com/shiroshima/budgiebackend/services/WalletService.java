@@ -16,10 +16,13 @@ import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.WalletMapper;
+import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.Wallet;
 import br.com.shiroshima.budgiebackend.models.WalletMember;
+import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 import br.com.shiroshima.budgiebackend.models.enums.WalletRole;
+import br.com.shiroshima.budgiebackend.repositories.CategoryRepository;
 import br.com.shiroshima.budgiebackend.repositories.TransactionRepository;
 import br.com.shiroshima.budgiebackend.repositories.WalletMemberRepository;
 import br.com.shiroshima.budgiebackend.repositories.WalletRepository;
@@ -37,6 +40,22 @@ public class WalletService {
     private final UserService userService;
     private final TransactionRepository transactionRepo;
     private final WalletMemberRepository walletMemberRepo;
+    // Repo e não CategoryService pq o CategoryService já depende deste service (ciclo de bean)
+    private final CategoryRepository categoryRepo;
+
+    // Toda carteira nasce com essas, cor em hex sem o #
+    private record DefaultCategory(String name, TransactionType type, String color) {}
+
+    private static final List<DefaultCategory> DEFAULT_CATEGORIES = List.of(
+        new DefaultCategory("Salário", TransactionType.INCOME, "2563eb"),
+        new DefaultCategory("Outras receitas", TransactionType.INCOME, "0891b2"),
+        new DefaultCategory("Alimentação", TransactionType.EXPENSE, "dc2626"),
+        new DefaultCategory("Moradia", TransactionType.EXPENSE, "ea580c"),
+        new DefaultCategory("Transporte", TransactionType.EXPENSE, "ca8a04"),
+        new DefaultCategory("Saúde", TransactionType.EXPENSE, "db2777"),
+        new DefaultCategory("Lazer", TransactionType.EXPENSE, "7c3aed"),
+        new DefaultCategory("Outras despesas", TransactionType.EXPENSE, "64748b")
+    );
 
     // Métodos internos
 
@@ -61,6 +80,7 @@ public class WalletService {
         wallet.setActive(false);
         repo.save(wallet);
         transactionRepo.deactivateByWalletId(wallet.getId());
+        categoryRepo.deactivateByWalletId(wallet.getId());
     }
 
     // Métodos externos
@@ -73,6 +93,9 @@ public class WalletService {
         Wallet newWallet = mapper.toEntity(data, owner);
         repo.save(newWallet);
         walletMemberRepo.save(new WalletMember(newWallet, owner, WalletRole.OWNER));
+        categoryRepo.saveAll(DEFAULT_CATEGORIES.stream()
+            .map(d -> new Category(newWallet, d.name(), d.type(), d.color(), null))
+            .toList());
 
         return mapper.toResponse(newWallet);
     }

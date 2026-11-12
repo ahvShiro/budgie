@@ -6,14 +6,14 @@ import br.com.shiroshima.budgiebackend.dtos.category.CategoryRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.category.CategoryResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.category.CategoryUpdateDTO;
 import br.com.shiroshima.budgiebackend.models.Category;
-import br.com.shiroshima.budgiebackend.models.User;
+import br.com.shiroshima.budgiebackend.models.Wallet;
 
 @Component
 public class CategoryMapper {
 
-    public Category toEntity(CategoryRegisterDTO dto, User owner) {
+    public Category toEntity(CategoryRegisterDTO dto, Wallet wallet) {
         return new Category(
-            owner,
+            wallet,
             dto.name(),
             dto.transactionType(),
             dto.color(),
@@ -24,7 +24,7 @@ public class CategoryMapper {
     public CategoryResponseDTO toResponse(Category category) {
         return new CategoryResponseDTO(
             category.getId(),
-            category.getUser().getId(),
+            category.getWallet().getId(),
             category.getName(),
             category.getTransactionType(),
             category.getColor(),
