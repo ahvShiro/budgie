@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/dialog.tsx';
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -220,86 +219,82 @@ export const TransactionFormDialog = ({
               </ToggleGroup>
             </Field>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel htmlFor="value">Valor</FieldLabel>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <InputGroupText>R$</InputGroupText>
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    type="number"
-                    id="value"
-                    name="value"
-                    step="0.01"
-                    min="0.01"
-                    inputMode="decimal"
-                    placeholder="0,00"
-                    aria-invalid={!!fieldErrors.value}
-                    value={fields.value}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <FieldError
-                  errors={
-                    fieldErrors.value ? [{ message: fieldErrors.value }] : []
-                  }
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="date">Data e hora</FieldLabel>
-                <div className="flex gap-2">
-                  <Popover
-                    open={isCalendarOpen}
-                    onOpenChange={setIsCalendarOpen}
-                    modal
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="date"
-                        type="button"
-                        variant="outline"
-                        className="flex-1 justify-start font-normal"
-                        aria-invalid={!!fieldErrors.date}
-                      >
-                        <CalendarIcon />
+            <Field>
+              <FieldLabel htmlFor="date">Data e hora</FieldLabel>
+              <div className="flex gap-2">
+                <Popover
+                  open={isCalendarOpen}
+                  onOpenChange={setIsCalendarOpen}
+                  modal
+                >
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="date"
+                      type="button"
+                      variant="outline"
+                      className="justify-start font-normal"
+                      aria-invalid={!!fieldErrors.date}
+                    >
+                      <CalendarIcon />
+                      <span className="truncate">
                         {fields.date
                           ? formatDate(new Date(fields.date))
                           : 'Selecione uma data'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        locale={ptBR}
-                        selected={
-                          fields.date ? new Date(fields.date) : undefined
-                        }
-                        defaultMonth={
-                          fields.date ? new Date(fields.date) : undefined
-                        }
-                        disabled={{ after: new Date() }}
-                        onSelect={handleDateSelect}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <Input
-                    type="time"
-                    aria-label="Hora"
-                    className="w-auto"
-                    aria-invalid={!!fieldErrors.date}
-                    value={fields.date.slice(11, 16)}
-                    onChange={handleTimeChange}
-                  />
-                </div>
-                <FieldError
-                  errors={
-                    fieldErrors.date ? [{ message: fieldErrors.date }] : []
-                  }
+                      </span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      locale={ptBR}
+                      selected={fields.date ? new Date(fields.date) : undefined}
+                      defaultMonth={
+                        fields.date ? new Date(fields.date) : undefined
+                      }
+                      disabled={{ after: new Date() }}
+                      onSelect={handleDateSelect}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Input
+                  type="time"
+                  aria-label="Hora"
+                  className="w-auto shrink-0"
+                  aria-invalid={!!fieldErrors.date}
+                  value={fields.date.slice(11, 16)}
+                  onChange={handleTimeChange}
                 />
-              </Field>
-            </div>
+              </div>
+              <FieldError
+                errors={fieldErrors.date ? [{ message: fieldErrors.date }] : []}
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="value">Valor</FieldLabel>
+              <InputGroup>
+                <InputGroupAddon>
+                  <InputGroupText>R$</InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput
+                  type="number"
+                  id="value"
+                  name="value"
+                  step="0.01"
+                  min="0.01"
+                  inputMode="decimal"
+                  placeholder="0,00"
+                  aria-invalid={!!fieldErrors.value}
+                  value={fields.value}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <FieldError
+                errors={
+                  fieldErrors.value ? [{ message: fieldErrors.value }] : []
+                }
+              />
+            </Field>
 
             <Field>
               <FieldLabel htmlFor="category">Categoria</FieldLabel>
@@ -326,12 +321,10 @@ export const TransactionFormDialog = ({
                 id="description"
                 name="description"
                 placeholder="Opcional"
+                className="field-sizing-fixed resize-none"
                 value={fields.description}
                 onChange={handleChange}
               />
-              <FieldDescription className="text-right">
-                {fields.description.length}/128
-              </FieldDescription>
               <FieldError
                 errors={
                   fieldErrors.description
