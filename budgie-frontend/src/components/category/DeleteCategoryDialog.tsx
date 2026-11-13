@@ -59,7 +59,8 @@ export const DeleteCategoryDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Deletar categoria</AlertDialogTitle>
           <AlertDialogDescription>
-            Deseja deletar a categoria <b>{category?.name}</b>?
+            Deseja deletar a categoria <b>{category?.name}</b>? As transações
+            associadas a ela não serão deletadas, mas ficarão sem categoria.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

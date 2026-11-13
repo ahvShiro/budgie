@@ -51,6 +51,14 @@ public class TransactionService {
         return category;
     }
 
+    private Category keepOrFetchCategory(Transaction t, Long walletId, Long categoryId, TransactionType type) {
+        Category current = t.getCategory();
+        if (current != null && current.getId().equals(categoryId) && current.getTransactionType() == type) {
+            return current;
+        }
+        return getCategoryEvenIfNull(walletId, categoryId, type);
+    }
+
     private Wallet fetchAccessibleWallet(Long walletId) {
         Wallet wallet = walletService.fetchById(walletId);
         walletService.checkAccess(wallet);
@@ -97,7 +105,7 @@ public class TransactionService {
         fetchOwnedWallet(walletId);
 
         Transaction t = fetchById(walletId, id);
-        mapper.updateEntity(t, data, getCategoryEvenIfNull(walletId, data.categoryId(), data.type()));
+        mapper.updateEntity(t, data, keepOrFetchCategory(t, walletId, data.categoryId(), data.type()));
         
         return mapper.toResponse(repo.save(t));
     }

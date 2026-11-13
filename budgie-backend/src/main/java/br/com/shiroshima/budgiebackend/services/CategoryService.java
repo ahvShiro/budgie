@@ -92,10 +92,6 @@ public class CategoryService {
         fetchOwnedWallet(walletId);
         Category cat = fetchById(walletId, id);
 
-        if (transactionRepo.existsByCategoryIdAndActive(cat.getId(), true)) {
-            throw new BusinessException("Não foi possível excluir pois existem transações com esta categoria");
-        }
-
         deactivateCategory(cat);
     }
 
