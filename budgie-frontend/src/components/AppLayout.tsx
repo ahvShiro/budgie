@@ -50,7 +50,7 @@ export const AppLayout = () => {
         </header>
 
         {/* Páginas leem pelo useCurrentUser, sem buscar o usuário de novo */}
-        <Outlet context={{ user } satisfies AppLayoutContext} />
+        <Outlet context={{ user, setUser } satisfies AppLayoutContext} />
       </SidebarInset>
     </SidebarProvider>
   );

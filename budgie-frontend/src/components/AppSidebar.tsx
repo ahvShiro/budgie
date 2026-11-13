@@ -88,9 +88,9 @@ export const AppSidebar = ({ userName }: AppSidebarProps) => {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === '/app/perfil/senha'}
+                  isActive={location.pathname === '/app/perfil'}
                 >
-                  <Link to="/app/perfil/senha">
+                  <Link to="/app/perfil">
                     <User />
                     <span>Perfil</span>
                   </Link>

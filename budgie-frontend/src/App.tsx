@@ -15,6 +15,7 @@ import { session } from './services/session';
 import { WalletListing } from '@/pages/Wallets/WalletListing.tsx';
 import { CategoryListing } from '@/pages/Categories/CategoryListing.tsx';
 import { TransactionListing } from '@/pages/Transactions/TransactionListing.tsx';
+import { Profile } from '@/pages/Profile/Profile.tsx';
 
 function App() {
   // TODO orquestrar páginas e adicionar fluxo
@@ -43,7 +44,7 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
               <Route path="/app/dashboard" element={<Dashboard />} />
-              <Route path="/app/perfil/senha" element={<div />} />
+              <Route path="/app/perfil" element={<Profile />} />
               <Route path="/app/carteiras" element={<WalletListing />} />
               <Route path="/app/transacoes" element={<TransactionListing />} />
               <Route path="/app/categorias" element={<CategoryListing />} />

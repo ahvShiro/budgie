@@ -50,6 +50,10 @@ export interface ApiAuthResponseDTO {
   token: string;
 }
 
+export interface UserUpdateDTO {
+  name: string;
+}
+
 export interface ApiUserResponseDTO {
   id: number;
   name: string;
