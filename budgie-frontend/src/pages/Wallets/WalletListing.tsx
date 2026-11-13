@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/table.tsx';
 import { formatCurrency, getInitial } from '@/lib/formatters.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Plus, Share2, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +39,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx';
 import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
+import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
+import { useCurrentUser } from '@/hooks/useCurrentUser.ts';
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
 const MAX_AVATARS = 3;
@@ -52,6 +54,9 @@ export const WalletListing = () => {
   );
   const [walletToDelete, setWalletToDelete] =
     useState<ApiWalletListingDTO | null>(null);
+  const [walletToShare, setWalletToShare] =
+    useState<ApiWalletListingDTO | null>(null);
+  const user = useCurrentUser();
 
   // Fora do useEffect pq o modal reusa pra recarregar depois de criar.
   // isLoading só começa true, então o refetch não pisca o skeleton
@@ -141,30 +146,38 @@ export const WalletListing = () => {
                       {formatCurrency(wallet.balance)}
                     </TableCell>
                     <TableCell className="w-px text-center">
-                      <DropdownMenu modal={false}>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="secondary"
-                            size="icon-sm"
-                            aria-label={`Ações da carteira ${wallet.name}`}
-                          >
-                            <MoreHorizontal />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onSelect={() => setWalletToEdit(wallet)}
-                          >
-                            <Pencil /> Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            variant="destructive"
-                            onSelect={() => setWalletToDelete(wallet)}
-                          >
-                            <Trash2 /> Deletar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {/* Todas as ações são de dono, membro comum não vê o menu */}
+                      {wallet.ownerId === user?.id && (
+                        <DropdownMenu modal={false}>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="secondary"
+                              size="icon-sm"
+                              aria-label={`Ações da carteira ${wallet.name}`}
+                            >
+                              <MoreHorizontal />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onSelect={() => setWalletToShare(wallet)}
+                            >
+                              <Share2 /> Compartilhar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => setWalletToEdit(wallet)}
+                            >
+                              <Pencil /> Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onSelect={() => setWalletToDelete(wallet)}
+                            >
+                              <Trash2 /> Deletar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -207,6 +220,12 @@ export const WalletListing = () => {
         wallet={walletToDelete}
         onOpenChange={(open) => !open && setWalletToDelete(null)}
         onDeleted={loadWallets}
+      />
+
+      <ShareWalletDialog
+        wallet={walletToShare}
+        onOpenChange={(open) => !open && setWalletToShare(null)}
+        onChanged={loadWallets}
       />
     </div>
   );

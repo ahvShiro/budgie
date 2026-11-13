@@ -9,9 +9,11 @@ import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { SESSION_EXPIRED_EVENT } from '@/configs/axiosConfig.ts';
 import { toastApiError } from '@/lib/apiErrors.ts';
+import type { AppLayoutContext } from '@/hooks/useCurrentUser.ts';
+import type { ApiUserResponseDTO } from '@/services/types.ts';
 
 export const AppLayout = () => {
-  const [userName, setUserName] = useState('');
+  const [user, setUser] = useState<ApiUserResponseDTO | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,8 +31,7 @@ export const AppLayout = () => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const user = await UserService.getMe();
-        setUserName(user.name);
+        setUser(await UserService.getMe());
       } catch (err) {
         toastApiError(err);
       }
@@ -41,14 +42,15 @@ export const AppLayout = () => {
 
   return (
     <SidebarProvider>
-      <AppSidebar userName={userName || 'Usuário'} />
+      <AppSidebar userName={user?.name || 'Usuário'} />
 
       <SidebarInset>
         <header className="flex h-14 items-center px-6">
           <SidebarTrigger />
         </header>
 
-        <Outlet />
+        {/* Páginas leem pelo useCurrentUser, sem buscar o usuário de novo */}
+        <Outlet context={{ user } satisfies AppLayoutContext} />
       </SidebarInset>
     </SidebarProvider>
   );

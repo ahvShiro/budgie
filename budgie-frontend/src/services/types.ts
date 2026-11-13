@@ -31,6 +31,17 @@ export interface WalletUpdateDTO {
   active: boolean;
 }
 
+export type WalletRole = 'OWNER' | 'EDITOR' | 'VIEWER';
+
+export interface WalletMemberRegisterDTO {
+  email: string;
+  role: WalletRole;
+}
+
+export interface WalletMemberUpdateDTO {
+  role: WalletRole;
+}
+
 export interface ApiMessageDTO {
   message: string;
 }
@@ -153,6 +164,7 @@ export interface ApiWalletSummaryDTO {
 
 export interface ApiWalletListingDTO {
   id: number;
+  ownerId: number;
   name: string;
   description: string | null;
   members: string[];
@@ -167,4 +179,14 @@ export interface ApiWalletResponseDTO {
   createdAt: string;
   updatedAt: string;
   active: boolean;
+}
+
+export interface ApiWalletMemberResponseDTO {
+  id: number;
+  walletId: number;
+  userId: number;
+  userName: string;
+  userEmail: string;
+  role: WalletRole;
+  createdAt: string;
 }

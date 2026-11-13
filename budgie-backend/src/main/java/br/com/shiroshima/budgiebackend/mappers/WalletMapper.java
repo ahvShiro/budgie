@@ -38,6 +38,7 @@ public class WalletMapper {
     public WalletListingDTO toListing(Wallet wallet, List<String> members, BigDecimal balance) {
         return new WalletListingDTO(
             wallet.getId(),
+            wallet.getOwner().getId(),
             wallet.getName(),
             wallet.getDescription(),
             members,
