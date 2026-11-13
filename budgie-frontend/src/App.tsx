@@ -38,12 +38,12 @@ function App() {
           <Route path="/register" element={<Signin />} />
           <Route path="/recuperar-senha" element={<PasswordRecover />} />
           <Route path="/redefinir-senha/:token?" element={<PasswordReset />} />
+          <Route path="/suporte" element={<Support />} />
 
           <Route element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
               <Route path="/app/dashboard" element={<Dashboard />} />
               <Route path="/app/perfil/senha" element={<div />} />
-              <Route path="/suporte" element={<Support />} />
               <Route path="/app/carteiras" element={<WalletListing />} />
               <Route path="/app/transacoes" element={<TransactionListing />} />
               <Route path="/app/categorias" element={<CategoryListing />} />
