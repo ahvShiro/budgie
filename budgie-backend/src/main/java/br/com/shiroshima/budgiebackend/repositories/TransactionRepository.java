@@ -12,6 +12,7 @@ import br.com.shiroshima.budgiebackend.models.Transaction;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
 import br.com.shiroshima.budgiebackend.repositories.projections.WalletBalance;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             GROUP BY t.wallet.id
             """)
     List<WalletBalance> sumBalanceByWalletIds(@Param("walletIds") List<Long> walletIds);
+
+    // só as carteiras que vc é dono
+    @Query("""
+            SELECT COALESCE(SUM(CASE WHEN t.type = br.com.shiroshima.budgiebackend.models.enums.TransactionType.INCOME
+                                     THEN t.value ELSE -t.value END), 0)
+            FROM Transaction t
+            WHERE t.wallet.owner.id = :ownerId
+              AND t.wallet.active = true
+              AND t.active = true
+            """)
+    BigDecimal sumBalanceByOwnerId(@Param("ownerId") Long ownerId);
 
     @Modifying(flushAutomatically = true)
     @Query("UPDATE Transaction t SET t.active = false WHERE t.wallet.id = :walletId AND t.active = true")

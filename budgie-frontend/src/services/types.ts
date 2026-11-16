@@ -175,6 +175,10 @@ export interface ApiWalletListingDTO {
   balance: number;
 }
 
+export interface ApiWalletTotalBalanceDTO {
+  balance: number;
+}
+
 export interface ApiWalletResponseDTO {
   id: number;
   ownerId: number;

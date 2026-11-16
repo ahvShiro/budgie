@@ -11,6 +11,7 @@ import {
 import { formatCurrency, formatShortDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import DashboardService, { MOCK_WALLET_ID } from '@/services/DashboardService';
+import WalletService from '@/services/WalletService';
 import type {
   ApiTransactionResponseDTO,
   ApiWalletSummaryDTO,
@@ -34,6 +35,7 @@ const DashboardSkeleton = () => (
 export const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState<ApiWalletSummaryDTO | null>(null);
+  const [totalBalance, setTotalBalance] = useState<number | null>(null);
   const [transactions, setTransactions] = useState<ApiTransactionResponseDTO[]>(
     []
   );
@@ -41,11 +43,13 @@ export const Dashboard = () => {
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const [walletSummary, recentTransactions] = await Promise.all([
+        const [total, walletSummary, recentTransactions] = await Promise.all([
+          WalletService.getTotalBalance(),
           DashboardService.getSummary(MOCK_WALLET_ID),
           DashboardService.getRecentTransactions(MOCK_WALLET_ID),
         ]);
 
+        setTotalBalance(total.balance);
         setSummary(walletSummary);
         setTransactions(recentTransactions);
       } catch (err) {
@@ -67,16 +71,16 @@ export const Dashboard = () => {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-6">
-      {isLoading || !summary ? (
+      {isLoading || !summary || totalBalance === null ? (
         <DashboardSkeleton />
       ) : (
         <>
           <h1 className="flex flex-col gap-1">
             <span className="text-sm font-normal text-muted-foreground">
-              Saldo atual
+              Saldo total das suas carteiras
             </span>
             <span className="text-4xl font-extrabold sm:text-6xl">
-              {formatCurrency(summary.balance)}
+              {formatCurrency(totalBalance)}
             </span>
           </h1>
 
