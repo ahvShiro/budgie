@@ -196,9 +196,14 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
     <div>
       <main className="flex flex-1 flex-col gap-4 p-6">
         <div className="flex justify-between">
-          <h1 className="flex flex-col gap-1 text-3xl font-extrabold">
-            {walletInfo ? walletInfo.name : <Skeleton className="h-9 w-48" />}
-          </h1>
+          <div>
+            <h1 className="flex flex-col gap-1 text-3xl font-extrabold">
+              {walletInfo ? walletInfo.name : <Skeleton className="h-9 w-64" />}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Transações realizadas na carteira
+            </p>
+          </div>
 
           <Button onClick={() => setIsCreateOpen(true)}>
             <Plus /> Registrar transação
