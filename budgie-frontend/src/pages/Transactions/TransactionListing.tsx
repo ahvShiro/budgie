@@ -40,10 +40,12 @@ import type {
   ApiPageDTO,
   ApiErrorMessage,
   ApiTransactionResponseDTO,
+  ApiWalletResponseDTO,
 } from '@/services/types.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
+import WalletService from '@/services/WalletService.ts';
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
 const PAGE_SIZE = 20;
@@ -56,7 +58,7 @@ interface CategoryCellProps {
 }
 
 const CategoryCell = ({ category }: CategoryCellProps) => {
-  if (!category) return '—';
+  if (!category) return '-';
 
   return (
     <span className="flex items-center gap-2">
@@ -66,8 +68,6 @@ const CategoryCell = ({ category }: CategoryCellProps) => {
   );
 };
 
-// A key remonta a página inteira ao trocar de carteira pela URL: página,
-// categorias e modais zeram sozinhos, sem useEffect pra resetar cada state
 export const TransactionListing = () => {
   const { walletId } = useParams();
 
@@ -83,13 +83,15 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
     useState<ApiPageDTO<ApiTransactionResponseDTO> | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
   const [categories, setCategories] = useState<ApiCategoryResponseDTO[]>([]);
+  const [walletInfo, setWalletInfo] = useState<ApiWalletResponseDTO | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [transactionToEdit, setTransactionToEdit] =
     useState<ApiTransactionResponseDTO | null>(null);
   // const [transactionToDelete, setTransactionToDelete] = useState();
 
-  // Map pra tabela achar a categoria de cada linha sem fazer find() por linha
   const categoriesById = useMemo(
     () => new Map(categories.map((c) => [c.id, c])),
     [categories]
@@ -97,8 +99,6 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
 
   const navigate = useNavigate();
 
-  // Transações e categorias falham juntas se a carteira não dá: o id fixo
-  // junta os dois toasts num só, e a página volta pra dashboard
   const handleLoadError = useCallback(
     (err: unknown) => {
       if (
@@ -143,21 +143,35 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
     loadOnChange();
   }, [pageNumber, loadTransactions]);
 
-  // Busca todas as categorias da carteira de uma vez, sem filtro de tipo.
-  // O modal filtra no cliente, aí trocar Entrada/Saída não faz request
+  // useEffect(() => {
+  //   const loadCategories = async () => {
+  //     try {
+  //       setCategories(await CategoryService.getCategories(walletId));
+  //     } catch (err) {
+  //       handleLoadError(err);
+  //     }
+  //   };
+  //
+  //   loadCategories();
+  // }, [walletId, handleLoadError]);
+
   useEffect(() => {
-    const loadCategories = async () => {
+    const loadWalletData = async () => {
       try {
-        setCategories(await CategoryService.getCategories(walletId));
-      } catch (err) {
-        handleLoadError(err);
+        const [walletData, categories] = await Promise.all([
+          WalletService.getWallet(walletId),
+          CategoryService.getCategories(walletId),
+        ]);
+        setWalletInfo(walletData);
+        setCategories(categories);
+      } catch (e) {
+        handleLoadError(e);
       }
     };
 
-    loadCategories();
+    loadWalletData();
   }, [walletId, handleLoadError]);
 
-  // Categoria criada no combobox entra na lista local, sem refetch
   const handleCategoryCreated = (category: ApiCategoryResponseDTO) => {
     setCategories((prev) => [...prev, category]);
   };
@@ -183,7 +197,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
       <main className="flex flex-1 flex-col gap-4 p-6">
         <div className="flex justify-between">
           <h1 className="flex flex-col gap-1 text-3xl font-extrabold">
-            Suas transações
+            {walletInfo ? walletInfo.name : <Skeleton className="h-9 w-48" />}
           </h1>
 
           <Button onClick={() => setIsCreateOpen(true)}>
@@ -218,7 +232,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
                   <TableRow key={transaction.id}>
                     <TableCell>{formatShortDate(transaction.date)}</TableCell>
                     <TableCell className="font-medium">
-                      {transaction.description || '—'}
+                      {transaction.description || '-'}
                     </TableCell>
                     <TableCell>
                       <CategoryCell

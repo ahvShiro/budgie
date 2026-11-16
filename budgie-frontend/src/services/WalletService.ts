@@ -20,6 +20,13 @@ class WalletService {
     return response.data;
   }
 
+  async getWallet(id: number) {
+    const response = await api.get<ApiWalletResponseDTO>(
+      `${this.endpoint}/${id}`
+    );
+    return response.data;
+  }
+
   async getRecentTransactions() {
     const response = await api.get<ApiRecentTransactionDTO[]>(
       `${this.endpoint}/recent-transactions`
