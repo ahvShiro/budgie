@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import br.com.shiroshima.budgiebackend.dtos.transaction.RecentTransactionDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletListingDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletTotalBalanceDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
+import br.com.shiroshima.budgiebackend.mappers.TransactionMapper;
 import br.com.shiroshima.budgiebackend.mappers.WalletMapper;
 import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.User;
@@ -38,6 +40,7 @@ public class WalletService {
 
     private final WalletRepository repo;
     private final WalletMapper mapper;
+    private final TransactionMapper transactionMapper;
     private final UserService userService;
     private final TransactionRepository transactionRepo;
     private final WalletMemberRepository walletMemberRepo;
@@ -62,6 +65,13 @@ public class WalletService {
 
     public Wallet fetchById(Long id) {
         return repo.findByIdAndActive(id, true).orElseThrow(() -> new ResourceNotFoundException("Carteira não encontrada"));
+    }
+
+    public List<Wallet> fetchUserWallets() {
+        return walletMemberRepo.findByUserIdAndWalletActive(userService.fetchAuthenticatedUser().getId(), true)
+        .stream()
+        .map(WalletMember::getWallet)
+        .toList();
     }
 
     public void checkAccess(Wallet wallet) {
@@ -102,10 +112,7 @@ public class WalletService {
     }
 
     public List<WalletListingDTO> getWallets() {
-        List<Wallet> wallets = walletMemberRepo.findByUserIdAndWalletActive(userService.fetchAuthenticatedUser().getId(), true)
-        .stream()
-        .map(WalletMember::getWallet)
-        .toList();
+        List<Wallet> wallets = fetchUserWallets();
 
         if (wallets.isEmpty()) {
             return List.of();
@@ -137,6 +144,19 @@ public class WalletService {
         return new WalletTotalBalanceDTO(
             transactionRepo.sumBalanceByOwnerId(userService.fetchAuthenticatedUser().getId())
         );
+    }
+
+    public List<RecentTransactionDTO> getRecentTransactions() {
+        List<Long> walletIds = fetchUserWallets().stream().map(Wallet::getId).toList();
+
+        if (walletIds.isEmpty()) {
+            return List.of();
+        }
+
+        return transactionRepo.findTop10ByWalletIdInAndActiveOrderByDateDescCreatedAtDesc(walletIds, true)
+        .stream()
+        .map(transactionMapper::toRecent)
+        .toList();
     }
 
     public WalletResponseDTO getWallet(Long id) {

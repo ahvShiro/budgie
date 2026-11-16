@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.shiroshima.budgiebackend.dtos.transaction.RecentTransactionDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletListingDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
@@ -42,6 +43,11 @@ public class WalletController {
     @GetMapping("/total-balance")
     public ResponseEntity<WalletTotalBalanceDTO> getTotalBalance() {
         return ResponseEntity.ok(service.getTotalBalance());
+    }
+
+    @GetMapping("/recent-transactions")
+    public ResponseEntity<List<RecentTransactionDTO>> getRecentTransactions() {
+        return ResponseEntity.ok(service.getRecentTransactions());
     }
 
     @GetMapping("/{id}")

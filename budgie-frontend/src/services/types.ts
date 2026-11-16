@@ -84,6 +84,19 @@ export interface ApiTransactionResponseDTO {
   active: boolean;
 }
 
+export interface ApiRecentTransactionDTO {
+  id: number;
+  walletId: number;
+  walletName: string;
+  categoryId: number | null;
+  categoryName: string | null;
+  categoryColor: string | null;
+  type: TransactionType;
+  value: number;
+  description: string;
+  date: string;
+}
+
 export interface TransactionRegisterDTO {
   categoryId: number | null;
   type: TransactionType;

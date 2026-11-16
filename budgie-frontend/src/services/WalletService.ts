@@ -1,5 +1,6 @@
 import api from '@/configs/axiosConfig.ts';
 import type {
+  ApiRecentTransactionDTO,
   ApiWalletListingDTO,
   ApiWalletResponseDTO,
   ApiWalletTotalBalanceDTO,
@@ -23,6 +24,13 @@ class WalletService {
   async getTotalBalance() {
     const response = await api.get<ApiWalletTotalBalanceDTO>(
       `${this.endpoint}/total-balance`
+    );
+    return response.data;
+  }
+
+  async getRecentTransactions() {
+    const response = await api.get<ApiRecentTransactionDTO[]>(
+      `${this.endpoint}/recent-transactions`
     );
     return response.data;
   }

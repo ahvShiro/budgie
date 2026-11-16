@@ -64,6 +64,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             """)
     BigDecimal sumBalanceByOwnerId(@Param("ownerId") Long ownerId);
 
+    @EntityGraph(attributePaths = { "category", "wallet" })
+    List<Transaction> findTop10ByWalletIdInAndActiveOrderByDateDescCreatedAtDesc(List<Long> walletIds, Boolean active);
+
     @Modifying(flushAutomatically = true)
     @Query("UPDATE Transaction t SET t.active = false WHERE t.wallet.id = :walletId AND t.active = true")
     int deactivateByWalletId(@Param("walletId") Long walletId);

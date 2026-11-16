@@ -2,6 +2,7 @@ package br.com.shiroshima.budgiebackend.mappers;
 
 import org.springframework.stereotype.Component;
 
+import br.com.shiroshima.budgiebackend.dtos.transaction.RecentTransactionDTO;
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionUpdateDTO;
@@ -38,6 +39,22 @@ public class TransactionMapper {
             transaction.getCreatedAt(),
             transaction.getUpdatedAt(),
             transaction.isActive()
+        );
+    }
+
+    public RecentTransactionDTO toRecent(Transaction transaction) {
+        Category category = transaction.getCategory();
+        return new RecentTransactionDTO(
+            transaction.getId(),
+            transaction.getWallet().getId(),
+            transaction.getWallet().getName(),
+            category != null ? category.getId() : null,
+            category != null ? category.getName() : null,
+            category != null ? category.getColor() : null,
+            transaction.getType(),
+            transaction.getValue(),
+            transaction.getDescription(),
+            transaction.getDate()
         );
     }
 
