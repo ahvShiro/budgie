@@ -17,7 +17,6 @@ import br.com.shiroshima.budgiebackend.dtos.transaction.RecentTransactionDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletListingDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.wallet.WalletTotalBalanceDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.services.WalletService;
 import jakarta.validation.Valid;
@@ -38,11 +37,6 @@ public class WalletController {
     @GetMapping
     public ResponseEntity<List<WalletListingDTO>> getWallets() {
         return ResponseEntity.ok(service.getWallets());
-    }
-
-    @GetMapping("/total-balance")
-    public ResponseEntity<WalletTotalBalanceDTO> getTotalBalance() {
-        return ResponseEntity.ok(service.getTotalBalance());
     }
 
     @GetMapping("/recent-transactions")

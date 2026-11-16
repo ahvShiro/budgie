@@ -27,6 +27,12 @@ export function formatDate(date: Date) {
   return dateFormatter.format(date);
 }
 
+const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'long' });
+
+export function formatMonth(date: Date) {
+  return monthFormatter.format(date);
+}
+
 // Inicial pro AvatarFallback, '?' se o nome vier vazio
 export function getInitial(name: string) {
   return name.trim().charAt(0).toUpperCase() || '?';

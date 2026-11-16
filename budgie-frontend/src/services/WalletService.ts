@@ -3,7 +3,6 @@ import type {
   ApiRecentTransactionDTO,
   ApiWalletListingDTO,
   ApiWalletResponseDTO,
-  ApiWalletTotalBalanceDTO,
   WalletRegisterDTO,
   WalletUpdateDTO,
 } from '@/services/types';
@@ -18,13 +17,6 @@ class WalletService {
 
   async getWallets() {
     const response = await api.get<ApiWalletListingDTO[]>(this.endpoint);
-    return response.data;
-  }
-
-  async getTotalBalance() {
-    const response = await api.get<ApiWalletTotalBalanceDTO>(
-      `${this.endpoint}/total-balance`
-    );
     return response.data;
   }
 

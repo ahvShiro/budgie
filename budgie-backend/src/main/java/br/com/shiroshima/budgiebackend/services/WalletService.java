@@ -14,7 +14,6 @@ import br.com.shiroshima.budgiebackend.dtos.transaction.RecentTransactionDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletListingDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletRegisterDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
-import br.com.shiroshima.budgiebackend.dtos.wallet.WalletTotalBalanceDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.exceptions.ResourceNotFoundException;
 import br.com.shiroshima.budgiebackend.mappers.TransactionMapper;
@@ -138,12 +137,6 @@ public class WalletService {
             balanceByWallet.getOrDefault(wallet.getId(), BigDecimal.ZERO)
         ))
         .toList();
-    }
-
-    public WalletTotalBalanceDTO getTotalBalance() {
-        return new WalletTotalBalanceDTO(
-            transactionRepo.sumBalanceByOwnerId(userService.fetchAuthenticatedUser().getId())
-        );
     }
 
     public List<RecentTransactionDTO> getRecentTransactions() {

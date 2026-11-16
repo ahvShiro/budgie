@@ -186,10 +186,9 @@ export interface ApiWalletListingDTO {
   description: string | null;
   members: string[];
   balance: number;
-}
-
-export interface ApiWalletTotalBalanceDTO {
-  balance: number;
+  // Só do mês atual do calendário
+  monthIncome: number;
+  monthExpense: number;
 }
 
 export interface ApiWalletResponseDTO {
