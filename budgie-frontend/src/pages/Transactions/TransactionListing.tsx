@@ -9,13 +9,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.tsx';
-import {
   Empty,
   EmptyDescription,
   EmptyHeader,
@@ -40,20 +33,23 @@ import {
 import { toastApiError } from '@/lib/apiErrors.ts';
 import { formatCurrency, formatShortDate } from '@/lib/formatters.ts';
 import { cn } from '@/lib/utils.ts';
-import WalletService from '@/services/WalletService.ts';
 import TransactionService from '@/services/TransactionService.ts';
 import CategoryService from '@/services/CategoryService.ts';
 import type {
   ApiCategoryResponseDTO,
   ApiPageDTO,
+  ApiErrorMessage,
   ApiTransactionResponseDTO,
-  ApiWalletListingDTO,
 } from '@/services/types.ts';
-import { Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
 const PAGE_SIZE = 20;
 const SORT = 'date,desc';
+// Id inválido (400), carteira apagada (404) ou de outra pessoa (403)
+const WALLET_UNAVAILABLE_STATUS = [400, 403, 404];
 
 interface CategoryCellProps {
   category?: ApiCategoryResponseDTO;
@@ -70,9 +66,19 @@ const CategoryCell = ({ category }: CategoryCellProps) => {
   );
 };
 
+// A key remonta a página inteira ao trocar de carteira pela URL: página,
+// categorias e modais zeram sozinhos, sem useEffect pra resetar cada state
 export const TransactionListing = () => {
-  const [wallets, setWallets] = useState<ApiWalletListingDTO[]>([]);
-  const [selectedWalletId, setSelectedWalletId] = useState<number | null>(null);
+  const { walletId } = useParams();
+
+  return <WalletTransactions key={walletId} walletId={Number(walletId)} />;
+};
+
+interface WalletTransactionsProps {
+  walletId: number;
+}
+
+const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
   const [transactions, setTransactions] =
     useState<ApiPageDTO<ApiTransactionResponseDTO> | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
@@ -89,24 +95,28 @@ export const TransactionListing = () => {
     [categories]
   );
 
-  useEffect(() => {
-    const loadWallets = async () => {
-      try {
-        const data = await WalletService.getWallets();
-        setWallets(data);
-        if (data.length > 0) setSelectedWalletId(data[0].id);
-        else setIsLoading(false);
-      } catch (err) {
-        toastApiError(err);
-        setIsLoading(false);
-      }
-    };
+  const navigate = useNavigate();
 
-    loadWallets();
-  }, []);
+  // Transações e categorias falham juntas se a carteira não dá: o id fixo
+  // junta os dois toasts num só, e a página volta pra dashboard
+  const handleLoadError = useCallback(
+    (err: unknown) => {
+      if (
+        axios.isAxiosError<ApiErrorMessage>(err) &&
+        err.response &&
+        WALLET_UNAVAILABLE_STATUS.includes(err.response.status)
+      ) {
+        toast.error(err.response.data.message, { id: 'carteira-indisponivel' });
+        navigate('/app/dashboard', { replace: true });
+      } else {
+        toastApiError(err);
+      }
+    },
+    [navigate]
+  );
 
   const loadTransactions = useCallback(
-    async (walletId: number, page: number) => {
+    async (page: number) => {
       setIsLoading(true);
       try {
         setTransactions(
@@ -117,39 +127,35 @@ export const TransactionListing = () => {
           })
         );
       } catch (err) {
-        toastApiError(err);
+        handleLoadError(err);
       } finally {
         setIsLoading(false);
       }
     },
-    []
+    [walletId, handleLoadError]
   );
 
   useEffect(() => {
-    if (selectedWalletId === null) return;
-
     const loadOnChange = async () => {
-      await loadTransactions(selectedWalletId, pageNumber);
+      await loadTransactions(pageNumber);
     };
 
     loadOnChange();
-  }, [selectedWalletId, pageNumber, loadTransactions]);
+  }, [pageNumber, loadTransactions]);
 
   // Busca todas as categorias da carteira de uma vez, sem filtro de tipo.
   // O modal filtra no cliente, aí trocar Entrada/Saída não faz request
   useEffect(() => {
-    if (selectedWalletId === null) return;
-
     const loadCategories = async () => {
       try {
-        setCategories(await CategoryService.getCategories(selectedWalletId));
+        setCategories(await CategoryService.getCategories(walletId));
       } catch (err) {
-        toastApiError(err);
+        handleLoadError(err);
       }
     };
 
     loadCategories();
-  }, [selectedWalletId]);
+  }, [walletId, handleLoadError]);
 
   // Categoria criada no combobox entra na lista local, sem refetch
   const handleCategoryCreated = (category: ApiCategoryResponseDTO) => {
@@ -167,14 +173,7 @@ export const TransactionListing = () => {
   };
 
   const handleSaved = () => {
-    if (selectedWalletId !== null) {
-      loadTransactions(selectedWalletId, pageNumber);
-    }
-  };
-
-  const handleWalletChange = (value: string) => {
-    setSelectedWalletId(Number(value));
-    setPageNumber(0);
+    loadTransactions(pageNumber);
   };
 
   const rows = transactions?.content ?? [];
@@ -187,31 +186,10 @@ export const TransactionListing = () => {
             Suas transações
           </h1>
 
-          <Button
-            onClick={() => setIsCreateOpen(true)}
-            disabled={selectedWalletId === null}
-          >
+          <Button onClick={() => setIsCreateOpen(true)}>
             <Plus /> Registrar transação
           </Button>
         </div>
-
-        {wallets.length > 0 && (
-          <Select
-            value={selectedWalletId?.toString()}
-            onValueChange={handleWalletChange}
-          >
-            <SelectTrigger className="w-60" aria-label="Carteira">
-              <SelectValue placeholder="Selecione uma carteira" />
-            </SelectTrigger>
-            <SelectContent>
-              {wallets.map((wallet) => (
-                <SelectItem key={wallet.id} value={wallet.id.toString()}>
-                  {wallet.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
 
         <div className="flex flex-col">
           <Table>
@@ -292,26 +270,11 @@ export const TransactionListing = () => {
                   <TableCell colSpan={6}>
                     <Empty>
                       <EmptyHeader>
-                        {wallets.length === 0 ? (
-                          <>
-                            <EmptyTitle>Nenhuma carteira ainda</EmptyTitle>
-                            <EmptyDescription>
-                              Crie uma carteira na tela de{' '}
-                              <b className={'underline'}>
-                                <Link to="/app/carteiras">Carteiras</Link>
-                              </b>{' '}
-                              antes de registrar transações.
-                            </EmptyDescription>
-                          </>
-                        ) : (
-                          <>
-                            <EmptyTitle>Nenhuma transação ainda</EmptyTitle>
-                            <EmptyDescription>
-                              Essa carteira ainda não tem nenhuma transação
-                              registrada.
-                            </EmptyDescription>
-                          </>
-                        )}
+                        <EmptyTitle>Nenhuma transação ainda</EmptyTitle>
+                        <EmptyDescription>
+                          Essa carteira ainda não tem nenhuma transação
+                          registrada.
+                        </EmptyDescription>
                       </EmptyHeader>
                     </Empty>
                   </TableCell>
@@ -348,33 +311,29 @@ export const TransactionListing = () => {
         </div>
       </main>
 
-      {selectedWalletId !== null && (
-        <>
-          <TransactionFormDialog
-            open={isCreateOpen}
-            onOpenChange={setIsCreateOpen}
-            onSaved={handleSaved}
-            walletId={selectedWalletId}
-            categories={categories}
-            onCategoryCreated={handleCategoryCreated}
-            onCategoryUpdated={handleCategoryUpdated}
-            onCategoryDeleted={handleCategoryDeleted}
-          />
+      <TransactionFormDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onSaved={handleSaved}
+        walletId={walletId}
+        categories={categories}
+        onCategoryCreated={handleCategoryCreated}
+        onCategoryUpdated={handleCategoryUpdated}
+        onCategoryDeleted={handleCategoryDeleted}
+      />
 
-          <TransactionFormDialog
-            key={transactionToEdit?.id ?? 'fechado'}
-            open={transactionToEdit !== null}
-            transaction={transactionToEdit}
-            onOpenChange={(open) => !open && setTransactionToEdit(null)}
-            onSaved={handleSaved}
-            walletId={selectedWalletId}
-            categories={categories}
-            onCategoryCreated={handleCategoryCreated}
-            onCategoryUpdated={handleCategoryUpdated}
-            onCategoryDeleted={handleCategoryDeleted}
-          />
-        </>
-      )}
+      <TransactionFormDialog
+        key={transactionToEdit?.id ?? 'fechado'}
+        open={transactionToEdit !== null}
+        transaction={transactionToEdit}
+        onOpenChange={(open) => !open && setTransactionToEdit(null)}
+        onSaved={handleSaved}
+        walletId={walletId}
+        categories={categories}
+        onCategoryCreated={handleCategoryCreated}
+        onCategoryUpdated={handleCategoryUpdated}
+        onCategoryDeleted={handleCategoryDeleted}
+      />
     </div>
   );
 };

@@ -19,19 +19,11 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { getInitial } from '@/lib/formatters';
 import { session } from '@/services/session';
-import {
-  ArrowLeftRight,
-  LayoutDashboard,
-  LifeBuoy,
-  LogOut,
-  User,
-  Wallet,
-} from 'lucide-react';
+import { LayoutDashboard, LifeBuoy, LogOut, User, Wallet } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
-  { title: 'Transações', url: '/app/transacoes', icon: ArrowLeftRight },
   { title: 'Carteiras', url: '/app/carteiras', icon: Wallet },
   // { title: 'Categorias', url: '/app/categorias', icon: Tag },
 ];

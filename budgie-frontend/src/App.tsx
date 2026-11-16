@@ -46,7 +46,10 @@ function App() {
               <Route path="/app/dashboard" element={<Dashboard />} />
               <Route path="/app/perfil" element={<Profile />} />
               <Route path="/app/carteiras" element={<WalletListing />} />
-              <Route path="/app/transacoes" element={<TransactionListing />} />
+              <Route
+                path="/app/carteiras/:walletId"
+                element={<TransactionListing />}
+              />
               <Route path="/app/categorias" element={<CategoryListing />} />
             </Route>
           </Route>

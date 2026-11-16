@@ -31,6 +31,7 @@ import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
 import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
 import { useCurrentUser } from '@/hooks/useCurrentUser.ts';
 import { MemberAvatars } from '@/components/MemberAvatars.tsx';
+import { Link } from 'react-router-dom';
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
 
@@ -104,7 +105,14 @@ export const WalletListing = () => {
               {!isLoading &&
                 wallets.map((wallet) => (
                   <TableRow key={wallet.id}>
-                    <TableCell className="font-medium">{wallet.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        to={`/app/carteiras/${wallet.id}`}
+                        className="hover:underline"
+                      >
+                        {wallet.name}
+                      </Link>
+                    </TableCell>
                     <TableCell>{wallet.description || '—'}</TableCell>
                     <TableCell>
                       <MemberAvatars members={wallet.members} />

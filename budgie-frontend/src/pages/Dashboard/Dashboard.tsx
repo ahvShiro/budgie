@@ -35,6 +35,7 @@ import { MemberAvatars } from '@/components/MemberAvatars.tsx';
 import { WalletFormDialog } from '@/components/wallet/WalletFormDialog.tsx';
 import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
 import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
+import { Link } from 'react-router-dom';
 
 const DashboardSkeleton = () => (
   <div className="flex flex-col gap-4">
@@ -69,14 +70,25 @@ const WalletOverview = ({
     monthTotal > 0 ? (wallet.monthIncome / monthTotal) * 100 : 0;
 
   return (
-    <article className="flex flex-col gap-3 border-b py-5 md:odd:pr-6 md:even:pl-6 md:odd:not-last:border-r md:odd:last:col-span-2 md:odd:last:pr-0">
+    <article className="group relative flex flex-col gap-3 border-b py-5 md:odd:pr-6 md:even:pl-6 md:odd:not-last:border-r md:odd:last:col-span-2 md:odd:last:pr-0">
       <header className="flex items-baseline justify-between gap-4">
-        <h3 className="truncate font-bold">{wallet.name}</h3>
+        <h3 className="truncate font-bold group-hover:underline">
+          {/* Link "esticado": o ::after cobre o bloco todo e deixa ele clicável
+              sem botão dentro de <a> (HTML inválido). Menu e avatares ficam
+              por cima com z-10 pra continuarem respondendo */}
+          <Link
+            to={`/app/carteiras/${wallet.id}`}
+            className="after:absolute after:inset-0"
+          >
+            {wallet.name}
+          </Link>
+        </h3>
         {/* Todas as ações são de dono, quem só participa vê a etiqueta no lugar */}
         {isOwner ? (
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
+                className="relative z-10"
                 variant="ghost"
                 size="icon-sm"
                 aria-label={`Ações da carteira ${wallet.name}`}
@@ -130,7 +142,11 @@ const WalletOverview = ({
         )}
       </div>
 
-      {wallet.members.length > 1 && <MemberAvatars members={wallet.members} />}
+      {wallet.members.length > 1 && (
+        <div className="relative z-10 w-fit">
+          <MemberAvatars members={wallet.members} />
+        </div>
+      )}
     </article>
   );
 };
@@ -186,9 +202,9 @@ export const Dashboard = () => {
           <section className="flex flex-col gap-4">
             <div className="flex justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-extrabold">Suas carteiras</h1>
+                <h1 className="text-3xl font-extrabold">Dashboard</h1>
                 <p className="text-sm text-muted-foreground">
-                  Como cada uma está no mês de <b>{monthName}</b>
+                  Suas carteiras no mês de <b>{monthName}</b>
                 </p>
               </div>
 
