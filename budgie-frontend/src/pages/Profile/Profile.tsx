@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ChangePasswordForm } from '@/components/user/ChangePasswordForm';
 import { useCurrentUser, useSetCurrentUser } from '@/hooks/useCurrentUser.ts';
 import { toastApiError } from '@/lib/apiErrors.ts';
 import { formatDate } from '@/lib/formatters.ts';
@@ -111,6 +112,8 @@ export const Profile = () => {
           <Skeleton className="h-9 w-full" />
         </div>
       )}
+
+      <ChangePasswordForm />
     </main>
   );
 };

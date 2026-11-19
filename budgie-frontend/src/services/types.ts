@@ -54,6 +54,12 @@ export interface UserUpdateDTO {
   name: string;
 }
 
+export interface UserPasswordUpdateDTO {
+  currentPassword: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}
+
 export interface ApiUserResponseDTO {
   id: number;
   name: string;

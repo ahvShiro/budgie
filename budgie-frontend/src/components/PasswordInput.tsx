@@ -10,6 +10,7 @@ interface PasswordInputProps extends React.HTMLAttributes<HTMLInputElement> {
   id?: string;
   name?: string;
   className?: string;
+  autoComplete?: string;
 }
 
 export const PasswordInput = ({
@@ -20,6 +21,7 @@ export const PasswordInput = ({
   onBlur,
   name,
   value,
+  autoComplete,
 }: PasswordInputProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
@@ -53,6 +55,7 @@ export const PasswordInput = ({
         value={value}
         onChange={onChange}
         onBlur={onBlur}
+        autoComplete={autoComplete}
       />
       <InputGroupAddon align="inline-end">
         <EyeIcon

@@ -1,5 +1,9 @@
 import api from '@/configs/axiosConfig';
-import type { ApiUserResponseDTO, UserUpdateDTO } from '@/services/types';
+import type {
+  ApiUserResponseDTO,
+  UserPasswordUpdateDTO,
+  UserUpdateDTO,
+} from '@/services/types';
 
 class UserService {
   private endpoint: string = '/api/v1/users';
@@ -12,9 +16,13 @@ class UserService {
   async updateMe(data: UserUpdateDTO) {
     const response = await api.put<ApiUserResponseDTO>(
       `${this.endpoint}/me`,
-      data,
+      data
     );
     return response.data;
+  }
+
+  async updatePassword(data: UserPasswordUpdateDTO) {
+    await api.patch(`${this.endpoint}/me/password`, data);
   }
 }
 
