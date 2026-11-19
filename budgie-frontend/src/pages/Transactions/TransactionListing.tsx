@@ -213,7 +213,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
   return (
     <div>
       <main className="flex flex-1 flex-col gap-4 p-6">
-        <div className="flex justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between">
           <div>
             <h1 className="flex flex-col gap-1 text-3xl font-extrabold">
               {walletInfo ? walletInfo.name : <Skeleton className="h-9 w-64" />}
@@ -228,26 +228,33 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
               <>
                 <Button
                   variant="outline"
+                  aria-label="Compartilhar carteira"
                   onClick={() => setIsWalletShareOpen(true)}
                 >
-                  <Share2 /> Compartilhar
+                  <Share2 />{' '}
+                  <span className="hidden lg:inline">Compartilhar</span>
                 </Button>
                 <Button
                   variant="outline"
+                  aria-label="Editar carteira"
                   onClick={() => setIsWalletEditOpen(true)}
                 >
-                  <Pencil /> Editar
+                  <Pencil /> <span className="hidden lg:inline">Editar</span>
                 </Button>
                 <Button
                   variant="destructive"
+                  aria-label="Deletar carteira"
                   onClick={() => setIsWalletDeleteOpen(true)}
                 >
-                  <Trash2 /> Deletar
+                  <Trash2 /> <span className="hidden lg:inline">Deletar</span>
                 </Button>
               </>
             )}
 
-            <Button onClick={() => setIsCreateOpen(true)}>
+            <Button
+              className="ml-auto lg:ml-0"
+              onClick={() => setIsCreateOpen(true)}
+            >
               <Plus /> Registrar transação
             </Button>
           </div>
@@ -257,10 +264,21 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-40">Data</TableHead>
+                {/* hidden = mobile */}
+                <TableHead className="hidden w-40 md:table-cell">
+                  Data
+                </TableHead>
                 <TableHead>Descrição</TableHead>
-                <TableHead className="w-40">Categoria</TableHead>
-                <TableHead className="w-24">Tipo</TableHead>
+
+                {/* hidden = mobile */}
+                <TableHead className="hidden w-40 md:table-cell">
+                  Categoria
+                </TableHead>
+
+                {/* hidden = mobile */}
+                <TableHead className="hidden w-24 md:table-cell">
+                  Tipo
+                </TableHead>
                 <TableHead className="text-right">Valor</TableHead>
                 <TableHead className="w-px text-center">Ações</TableHead>
               </TableRow>
@@ -278,11 +296,20 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
               {!isLoading &&
                 rows.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell>{formatDateTime(transaction.date)}</TableCell>
+                    {/* mobile */}
+                    <TableCell className="hidden md:table-cell">
+                      {formatDateTime(transaction.date)}
+                    </TableCell>
+
                     <TableCell className="font-medium">
                       {transaction.description || '-'}
+                      <span className="block text-xs font-normal text-muted-foreground md:hidden">
+                        {transaction.categoryId !== null &&
+                          `${categoriesById.get(transaction.categoryId)?.name ?? ''} · `}
+                        {formatDateTime(transaction.date)}
+                      </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <CategoryCell
                         category={
                           transaction.categoryId !== null
@@ -291,7 +318,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       {transaction.type === 'INCOME' ? 'Entrada' : 'Saída'}
                     </TableCell>
                     <TableCell
@@ -408,7 +435,9 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
       />
 
       <WalletFormDialog
-        key={isWalletEditOpen ? `carteira-${walletInfo?.id}` : 'carteira-fechado'}
+        key={
+          isWalletEditOpen ? `carteira-${walletInfo?.id}` : 'carteira-fechado'
+        }
         open={isWalletEditOpen}
         wallet={walletInfo}
         onOpenChange={setIsWalletEditOpen}

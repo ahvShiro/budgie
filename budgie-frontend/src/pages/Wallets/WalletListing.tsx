@@ -86,8 +86,12 @@ export const WalletListing = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-60">Nome</TableHead>
-                <TableHead className="w-160">Descrição</TableHead>
-                <TableHead className="w-30">Membros</TableHead>
+                <TableHead className="hidden w-160 md:table-cell">
+                  Descrição
+                </TableHead>
+                <TableHead className="hidden w-30 md:table-cell">
+                  Membros
+                </TableHead>
                 <TableHead className="text-right">Valor</TableHead>
                 <TableHead className="w-px text-center">Ações</TableHead>
               </TableRow>
@@ -112,9 +116,16 @@ export const WalletListing = () => {
                       >
                         {wallet.name}
                       </Link>
+                      {wallet.description && (
+                        <span className="block text-xs font-normal text-muted-foreground md:hidden">
+                          {wallet.description}
+                        </span>
+                      )}
                     </TableCell>
-                    <TableCell>{wallet.description || '—'}</TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {wallet.description || '—'}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <MemberAvatars members={wallet.members} />
                     </TableCell>
                     <TableCell className="text-right">

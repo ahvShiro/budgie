@@ -252,9 +252,13 @@ export const Dashboard = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Descrição</TableHead>
-                  <TableHead>Carteira</TableHead>
-                  <TableHead>Categoria</TableHead>
-                  <TableHead>Data</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Carteira
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Categoria
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">Data</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
                 </TableRow>
               </TableHeader>
@@ -271,11 +275,17 @@ export const Dashboard = () => {
                 )}
                 {transactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell>{transaction.description || '-'}</TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
+                      {transaction.description || '-'}
+                      <span className="block text-xs text-muted-foreground md:hidden">
+                        {transaction.walletName} ·{' '}
+                        {formatDateTime(transaction.date)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="hidden text-muted-foreground md:table-cell">
                       {transaction.walletName}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden text-muted-foreground md:table-cell">
                       {transaction.categoryName ? (
                         <span className="flex items-center gap-2">
                           <span
@@ -290,7 +300,7 @@ export const Dashboard = () => {
                         '—'
                       )}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden text-muted-foreground md:table-cell">
                       {formatDateTime(transaction.date)}
                     </TableCell>
                     <TableCell
