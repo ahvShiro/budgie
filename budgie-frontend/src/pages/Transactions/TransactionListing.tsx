@@ -22,6 +22,10 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { CategoryDot } from '@/components/category/CategoryCombobox.tsx';
 import { TransactionFormDialog } from '@/components/transaction/TransactionFormDialog.tsx';
+import { WalletFormDialog } from '@/components/wallet/WalletFormDialog.tsx';
+import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
+import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
+import { useCurrentUser } from '@/hooks/useCurrentUser.ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ChevronLeft,
@@ -29,6 +33,8 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
+  Share2,
+  Trash2,
 } from 'lucide-react';
 import { toastApiError } from '@/lib/apiErrors.ts';
 import { formatCurrency, formatShortDate } from '@/lib/formatters.ts';
@@ -91,6 +97,12 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
   const [transactionToEdit, setTransactionToEdit] =
     useState<ApiTransactionResponseDTO | null>(null);
   // const [transactionToDelete, setTransactionToDelete] = useState();
+  const [isWalletEditOpen, setIsWalletEditOpen] = useState(false);
+  const [isWalletShareOpen, setIsWalletShareOpen] = useState(false);
+  const [isWalletDeleteOpen, setIsWalletDeleteOpen] = useState(false);
+
+  const user = useCurrentUser();
+  const isOwner = !!user && walletInfo?.ownerId === user.id;
 
   const categoriesById = useMemo(
     () => new Map(categories.map((c) => [c.id, c])),
@@ -178,6 +190,14 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
     loadTransactions(pageNumber);
   };
 
+  const reloadWallet = async () => {
+    try {
+      setWalletInfo(await WalletService.getWallet(walletId));
+    } catch (err) {
+      handleLoadError(err);
+    }
+  };
+
   const rows = transactions?.content ?? [];
 
   return (
@@ -193,9 +213,34 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
             </p>
           </div>
 
-          <Button onClick={() => setIsCreateOpen(true)}>
-            <Plus /> Registrar transação
-          </Button>
+          <div className="flex flex-wrap items-start gap-2">
+            {isOwner && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsWalletShareOpen(true)}
+                >
+                  <Share2 /> Compartilhar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsWalletEditOpen(true)}
+                >
+                  <Pencil /> Editar
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => setIsWalletDeleteOpen(true)}
+                >
+                  <Trash2 /> Deletar
+                </Button>
+              </>
+            )}
+
+            <Button onClick={() => setIsCreateOpen(true)}>
+              <Plus /> Registrar transação
+            </Button>
+          </div>
         </div>
 
         <div className="flex flex-col">
@@ -340,6 +385,26 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
         onCategoryCreated={handleCategoryCreated}
         onCategoryUpdated={handleCategoryUpdated}
         onCategoryDeleted={handleCategoryDeleted}
+      />
+
+      <WalletFormDialog
+        key={isWalletEditOpen ? walletInfo?.id : 'fechado'}
+        open={isWalletEditOpen}
+        wallet={walletInfo}
+        onOpenChange={setIsWalletEditOpen}
+        onSaved={reloadWallet}
+      />
+
+      <ShareWalletDialog
+        wallet={isWalletShareOpen ? walletInfo : null}
+        onOpenChange={setIsWalletShareOpen}
+        onChanged={reloadWallet}
+      />
+
+      <DeleteWalletDialog
+        wallet={isWalletDeleteOpen ? walletInfo : null}
+        onOpenChange={setIsWalletDeleteOpen}
+        onDeleted={() => navigate('/app/dashboard', { replace: true })}
       />
     </div>
   );
