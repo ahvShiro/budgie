@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { CategoryDot } from '@/components/category/CategoryCombobox.tsx';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import { TransactionFormDialog } from '@/components/transaction/TransactionFormDialog.tsx';
 import { WalletFormDialog } from '@/components/wallet/WalletFormDialog.tsx';
 import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
@@ -56,6 +57,7 @@ import type {
   ApiErrorMessage,
   ApiTransactionResponseDTO,
   ApiWalletListingDTO,
+  TransactionType,
 } from '@/services/types.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -67,6 +69,8 @@ const PAGE_SIZE = 20;
 const SORT = 'date,desc';
 // Id inválido (400), carteira apagada (404) ou de outra pessoa (403)
 const WALLET_UNAVAILABLE_STATUS = [400, 403, 404];
+
+type TypeFilter = 'ALL' | TransactionType;
 
 interface CategoryCellProps {
   category?: ApiCategoryResponseDTO;
@@ -97,6 +101,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
   const [transactions, setTransactions] =
     useState<ApiPageDTO<ApiTransactionResponseDTO> | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('ALL');
   const [categories, setCategories] = useState<ApiCategoryResponseDTO[]>([]);
   const [walletInfo, setWalletInfo] = useState<ApiWalletListingDTO | null>(
     null
@@ -152,6 +157,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
             page,
             size: PAGE_SIZE,
             sort: SORT,
+            type: typeFilter === 'ALL' ? undefined : typeFilter,
           })
         );
       } catch (err) {
@@ -160,7 +166,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
         setIsLoading(false);
       }
     },
-    [walletId, handleLoadError]
+    [walletId, typeFilter, handleLoadError]
   );
 
   useEffect(() => {
@@ -205,6 +211,12 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
   const handleSaved = () => {
     loadTransactions(pageNumber);
     reloadWallet();
+  };
+
+  const handleTypeFilterChange = (value: string) => {
+    if (!value) return;
+    setTypeFilter(value as TypeFilter);
+    setPageNumber(0);
   };
 
   const handleTransactionDeleted = () => {
@@ -310,6 +322,30 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
             <Skeleton className="h-20 w-full" />
           )}
         </section>
+
+        <ToggleGroup
+          type="single"
+          variant="outline"
+          spacing={0}
+          className="w-fit"
+          value={typeFilter}
+          onValueChange={handleTypeFilterChange}
+          aria-label="Filtrar por tipo"
+        >
+          <ToggleGroupItem value="ALL">Todas</ToggleGroupItem>
+          <ToggleGroupItem
+            value="INCOME"
+            className="data-[state=on]:text-income"
+          >
+            Entradas
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="EXPENSE"
+            className="data-[state=on]:text-expense"
+          >
+            Saídas
+          </ToggleGroupItem>
+        </ToggleGroup>
 
         <div className="flex flex-col">
           <Table>
@@ -420,11 +456,26 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
                   <TableCell colSpan={6}>
                     <Empty>
                       <EmptyHeader>
-                        <EmptyTitle>Nenhuma transação ainda</EmptyTitle>
-                        <EmptyDescription>
-                          Essa carteira ainda não tem nenhuma transação
-                          registrada.
-                        </EmptyDescription>
+                        {typeFilter === 'ALL' ? (
+                          <>
+                            <EmptyTitle>Nenhuma transação ainda</EmptyTitle>
+                            <EmptyDescription>
+                              Essa carteira ainda não tem nenhuma transação
+                              registrada.
+                            </EmptyDescription>
+                          </>
+                        ) : (
+                          <>
+                            <EmptyTitle>
+                              Nenhuma transação encontrada
+                            </EmptyTitle>
+                            <EmptyDescription>
+                              Nenhuma{' '}
+                              {typeFilter === 'INCOME' ? 'entrada' : 'saída'}{' '}
+                              registrada nessa carteira.
+                            </EmptyDescription>
+                          </>
+                        )}
                       </EmptyHeader>
                     </Empty>
                   </TableCell>
