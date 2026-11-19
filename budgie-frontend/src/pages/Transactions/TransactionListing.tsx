@@ -28,6 +28,7 @@ import { DeleteTransactionDialog } from '@/components/transaction/DeleteTransact
 import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
 import { useCurrentUser } from '@/hooks/useCurrentUser.ts';
 import { MemberAvatars } from '@/components/MemberAvatars.tsx';
+import { WalletBalanceSummary } from '@/components/wallet/WalletBalanceSummary.tsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ChevronLeft,
@@ -39,7 +40,11 @@ import {
   Trash2,
 } from 'lucide-react';
 import { toastApiError } from '@/lib/apiErrors.ts';
-import { formatCurrency, formatDateTime } from '@/lib/formatters.ts';
+import {
+  formatCurrency,
+  formatDateTime,
+  formatMonth,
+} from '@/lib/formatters.ts';
 import { cn } from '@/lib/utils.ts';
 import TransactionService from '@/services/TransactionService.ts';
 import CategoryService from '@/services/CategoryService.ts';
@@ -191,6 +196,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
 
   const handleSaved = () => {
     loadTransactions(pageNumber);
+    reloadWallet();
   };
 
   const handleTransactionDeleted = () => {
@@ -199,6 +205,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
     } else {
       loadTransactions(pageNumber);
     }
+    reloadWallet();
   };
 
   const reloadWallet = async () => {
@@ -268,6 +275,20 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
             </Button>
           </div>
         </div>
+
+        <section className="flex flex-col gap-3 border-y py-5">
+          <h2 className="text-xs tracking-wider text-muted-foreground uppercase">
+            Saldo da carteira
+          </h2>
+          {walletInfo ? (
+            <WalletBalanceSummary
+              wallet={walletInfo}
+              monthName={formatMonth(new Date())}
+            />
+          ) : (
+            <Skeleton className="h-20 w-full" />
+          )}
+        </section>
 
         <div className="flex flex-col">
           <Table>

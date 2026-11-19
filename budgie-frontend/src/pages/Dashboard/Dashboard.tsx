@@ -35,6 +35,7 @@ import { MemberAvatars } from '@/components/MemberAvatars.tsx';
 import { WalletFormDialog } from '@/components/wallet/WalletFormDialog.tsx';
 import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
 import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
+import { WalletBalanceSummary } from '@/components/wallet/WalletBalanceSummary.tsx';
 import { Link } from 'react-router-dom';
 
 const DashboardSkeleton = () => (
@@ -65,10 +66,6 @@ const WalletOverview = ({
   onEdit,
   onDelete,
 }: WalletOverviewProps) => {
-  const monthTotal = wallet.monthIncome + wallet.monthExpense;
-  const incomeShare =
-    monthTotal > 0 ? (wallet.monthIncome / monthTotal) * 100 : 0;
-
   return (
     <article className="group relative flex flex-col gap-3 border-b py-5 md:odd:pr-6 md:even:pl-6 md:odd:not-last:border-r md:odd:last:col-span-2 md:odd:last:pr-0">
       <header className="flex items-baseline justify-between gap-4">
@@ -115,32 +112,7 @@ const WalletOverview = ({
         )}
       </header>
 
-      <p
-        className={cn(
-          'text-3xl font-extrabold tabular-nums',
-          wallet.balance < 0 && 'text-expense'
-        )}
-      >
-        {formatCurrency(wallet.balance)}
-      </p>
-
-      <dl className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm tabular-nums">
-        <dt className="text-muted-foreground capitalize">{monthName}</dt>
-        <dd className="text-income">+ {formatCurrency(wallet.monthIncome)}</dd>
-        <dd className="text-expense">
-          - {formatCurrency(wallet.monthExpense)}
-        </dd>
-      </dl>
-
-      {/* Proporção entradas x saídas do mês, os valores já estão no texto acima */}
-      <div aria-hidden className="flex h-1 w-full overflow-hidden bg-muted">
-        {monthTotal > 0 && (
-          <>
-            <div className="bg-income" style={{ width: `${incomeShare}%` }} />
-            <div className="flex-1 bg-expense" />
-          </>
-        )}
-      </div>
+      <WalletBalanceSummary wallet={wallet} monthName={monthName} />
 
       {wallet.members.length > 1 && (
         <div className="relative z-10 w-fit">
