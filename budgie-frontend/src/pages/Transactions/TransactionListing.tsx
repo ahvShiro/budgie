@@ -111,6 +111,11 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
 
   const user = useCurrentUser();
   const isOwner = !!user && walletInfo?.ownerId === user.id;
+  const role = walletInfo?.role;
+  const canCreate = role === 'OWNER' || role === 'EDITOR';
+  const canModify = (transaction: ApiTransactionResponseDTO) =>
+    role === 'OWNER' ||
+    (role === 'EDITOR' && transaction.createdById === user?.id);
 
   const categoriesById = useMemo(
     () => new Map(categories.map((c) => [c.id, c])),
@@ -267,12 +272,14 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
               </>
             )}
 
-            <Button
-              className="ml-auto lg:ml-0"
-              onClick={() => setIsCreateOpen(true)}
-            >
-              <Plus /> Registrar transação
-            </Button>
+            {canCreate && (
+              <Button
+                className="ml-auto lg:ml-0"
+                onClick={() => setIsCreateOpen(true)}
+              >
+                <Plus /> Registrar transação
+              </Button>
+            )}
           </div>
         </div>
 
@@ -362,23 +369,23 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
                       {formatCurrency(transaction.value)}
                     </TableCell>
                     <TableCell className="w-px text-center">
-                      <DropdownMenu modal={false}>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="secondary"
-                            size="icon-sm"
-                            aria-label="Ações da transação"
-                          >
-                            <MoreHorizontal />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onSelect={() => setTransactionToEdit(transaction)}
-                          >
-                            <Pencil /> Editar
-                          </DropdownMenuItem>
-                          {isOwner && (
+                      {canModify(transaction) && (
+                        <DropdownMenu modal={false}>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="secondary"
+                              size="icon-sm"
+                              aria-label="Ações da transação"
+                            >
+                              <MoreHorizontal />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onSelect={() => setTransactionToEdit(transaction)}
+                            >
+                              <Pencil /> Editar
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               variant="destructive"
                               onSelect={() =>
@@ -387,9 +394,9 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
                             >
                               <Trash2 /> Deletar
                             </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -449,6 +456,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
         onCategoryCreated={handleCategoryCreated}
         onCategoryUpdated={handleCategoryUpdated}
         onCategoryDeleted={handleCategoryDeleted}
+        canManageCategories={isOwner}
       />
 
       <TransactionFormDialog
@@ -462,6 +470,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
         onCategoryCreated={handleCategoryCreated}
         onCategoryUpdated={handleCategoryUpdated}
         onCategoryDeleted={handleCategoryDeleted}
+        canManageCategories={isOwner}
       />
 
       <WalletFormDialog

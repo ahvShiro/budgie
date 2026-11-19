@@ -44,6 +44,7 @@ interface CategoryComboboxProps {
   onCreated: (category: ApiCategoryResponseDTO) => void;
   onUpdated: (category: ApiCategoryResponseDTO) => void;
   onDeleted: (category: ApiCategoryResponseDTO) => void;
+  canManage: boolean;
 }
 
 interface CategoryDotProps {
@@ -67,6 +68,7 @@ export const CategoryCombobox = ({
   onCreated,
   onUpdated,
   onDeleted,
+  canManage,
 }: CategoryComboboxProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -295,25 +297,29 @@ export const CategoryCombobox = ({
                     >
                       <CategoryDot color={category.color} />
                       <span className="flex-1 truncate">{category.name}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={(e) => startEditing(e, category)}
-                        aria-label={`Editar ${category.name}`}
-                      >
-                        <Pencil />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        className="hover:text-destructive"
-                        onClick={(e) => handleDeleteClick(e, category)}
-                        aria-label={`Deletar ${category.name}`}
-                      >
-                        <Trash2 />
-                      </Button>
+                      {canManage && (
+                        <>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={(e) => startEditing(e, category)}
+                            aria-label={`Editar ${category.name}`}
+                          >
+                            <Pencil />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            className="hover:text-destructive"
+                            onClick={(e) => handleDeleteClick(e, category)}
+                            aria-label={`Deletar ${category.name}`}
+                          >
+                            <Trash2 />
+                          </Button>
+                        </>
+                      )}
                     </CommandItem>
                   )
                 )}

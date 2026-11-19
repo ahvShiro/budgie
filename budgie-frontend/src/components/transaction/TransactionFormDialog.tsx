@@ -59,6 +59,7 @@ interface TransactionFormDialogProps {
   onCategoryCreated: (category: ApiCategoryResponseDTO) => void;
   onCategoryUpdated: (category: ApiCategoryResponseDTO) => void;
   onCategoryDeleted: (category: ApiCategoryResponseDTO) => void;
+  canManageCategories: boolean;
   transaction?: ApiTransactionResponseDTO | null;
 }
 
@@ -76,6 +77,7 @@ export const TransactionFormDialog = ({
   onCategoryCreated,
   onCategoryUpdated,
   onCategoryDeleted,
+  canManageCategories,
   transaction,
 }: TransactionFormDialogProps) => {
   const isEditing = !!transaction;
@@ -312,6 +314,7 @@ export const TransactionFormDialog = ({
                 onCreated={onCategoryCreated}
                 onUpdated={onCategoryUpdated}
                 onDeleted={onCategoryDeleted}
+                canManage={canManageCategories}
               />
             </Field>
 

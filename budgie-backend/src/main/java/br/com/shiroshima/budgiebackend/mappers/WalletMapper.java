@@ -10,6 +10,7 @@ import br.com.shiroshima.budgiebackend.dtos.wallet.WalletResponseDTO;
 import br.com.shiroshima.budgiebackend.dtos.wallet.WalletUpdateDTO;
 import br.com.shiroshima.budgiebackend.models.User;
 import br.com.shiroshima.budgiebackend.models.Wallet;
+import br.com.shiroshima.budgiebackend.models.enums.WalletRole;
 import br.com.shiroshima.budgiebackend.repositories.projections.WalletBalance;
 
 @Component
@@ -35,7 +36,7 @@ public class WalletMapper {
         );
     }
 
-    public WalletListingDTO toListing(Wallet wallet, List<String> members, WalletBalance totals) {
+    public WalletListingDTO toListing(Wallet wallet, List<String> members, WalletBalance totals, WalletRole role) {
         return new WalletListingDTO(
             wallet.getId(),
             wallet.getOwner().getId(),
@@ -44,7 +45,8 @@ public class WalletMapper {
             members,
             totals.balance(),
             totals.monthIncome(),
-            totals.monthExpense()
+            totals.monthExpense(),
+            role
         );
     }
 

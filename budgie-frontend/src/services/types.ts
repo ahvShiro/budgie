@@ -189,6 +189,7 @@ export interface ApiWalletListingDTO {
   // Só do mês atual do calendário
   monthIncome: number;
   monthExpense: number;
+  role: WalletRole;
 }
 
 export interface ApiWalletResponseDTO {

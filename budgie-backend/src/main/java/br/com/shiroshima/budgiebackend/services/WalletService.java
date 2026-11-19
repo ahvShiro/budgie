@@ -81,6 +81,18 @@ public class WalletService {
         }
     }
 
+    // Wallet.owner é a autoridade, a linha OWNER em wallet_members não conta
+    public WalletRole fetchRole(Wallet wallet) {
+        Long userId = userService.fetchAuthenticatedUser().getId();
+        if (wallet.getOwner().getId().equals(userId)) {
+            return WalletRole.OWNER;
+        }
+
+        return walletMemberRepo.findByWalletIdAndUserId(wallet.getId(), userId)
+            .map(WalletMember::getRole)
+            .orElseThrow(() -> new AccessDeniedException("Você não tem acesso a esta carteira"));
+    }
+
     public void checkOwner(Wallet wallet) {
         if (!wallet.getOwner().getId().equals(userService.fetchAuthenticatedUser().getId())) {
             throw new AccessDeniedException("Apenas o dono pode alterar esta carteira");
@@ -118,8 +130,11 @@ public class WalletService {
         }
 
         List<Long> walletIds = wallets.stream().map(Wallet::getId).toList();
+        Long userId = userService.fetchAuthenticatedUser().getId();
 
-        Map<Long, List<String>> membersByWallet = walletMemberRepo.findByWalletIdIn(walletIds)
+        List<WalletMember> members = walletMemberRepo.findByWalletIdIn(walletIds);
+
+        Map<Long, List<String>> membersByWallet = members
         .stream()
         .collect(Collectors.groupingBy(
             member -> member.getWallet().getId(),
@@ -129,6 +144,11 @@ public class WalletService {
         LocalDateTime monthStart = LocalDate.now().withDayOfMonth(1).atStartOfDay();
         LocalDateTime monthEnd = monthStart.plusMonths(1);
 
+        Map<Long, WalletRole> roleByWallet = members
+        .stream()
+        .filter(member -> member.getUser().getId().equals(userId))
+        .collect(Collectors.toMap(member -> member.getWallet().getId(), WalletMember::getRole));
+
         Map<Long, WalletBalance> totalsByWallet = transactionRepo.sumBalanceByWalletIds(walletIds, monthStart, monthEnd)
         .stream()
         .collect(Collectors.toMap(WalletBalance::walletId, Function.identity()));
@@ -137,7 +157,8 @@ public class WalletService {
         .map(wallet -> mapper.toListing(
             wallet,
             membersByWallet.getOrDefault(wallet.getId(), List.of()),
-            totalsByWallet.getOrDefault(wallet.getId(), WalletBalance.empty(wallet.getId()))
+            totalsByWallet.getOrDefault(wallet.getId(), WalletBalance.empty(wallet.getId())),
+            wallet.getOwner().getId().equals(userId) ? WalletRole.OWNER : roleByWallet.get(wallet.getId())
         ))
         .toList();
     }

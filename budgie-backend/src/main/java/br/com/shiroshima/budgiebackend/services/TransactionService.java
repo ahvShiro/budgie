@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +20,7 @@ import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.Transaction;
 import br.com.shiroshima.budgiebackend.models.Wallet;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
+import br.com.shiroshima.budgiebackend.models.enums.WalletRole;
 import br.com.shiroshima.budgiebackend.repositories.TransactionRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -66,17 +68,30 @@ public class TransactionService {
         return wallet;
     }
 
-    private Wallet fetchOwnedWallet(Long walletId) {
+    private Wallet fetchWritableWallet(Long walletId) {
         Wallet wallet = walletService.fetchById(walletId);
-        walletService.checkOwner(wallet);
+        if (walletService.fetchRole(wallet) == WalletRole.VIEWER) {
+            throw new AccessDeniedException("Leitores não podem registrar transações");
+        }
         return wallet;
+    }
+
+    // Dono mexe em tudo, editor só no que ele mesmo lançou, leitor em nada
+    private void checkCanModify(Wallet wallet, Transaction transaction) {
+        WalletRole role = walletService.fetchRole(wallet);
+        if (role == WalletRole.OWNER) return;
+
+        boolean isAuthor = transaction.getCreatedBy().getId().equals(userService.fetchAuthenticatedUser().getId());
+        if (role == WalletRole.EDITOR && isAuthor) return;
+
+        throw new AccessDeniedException("Você não pode alterar esta transação");
     }
 
 
     // Métodos externos
 
     public TransactionResponseDTO registerTransaction(Long walletId, @Valid TransactionRegisterDTO data) {
-        Wallet wallet = fetchAccessibleWallet(walletId);
+        Wallet wallet = fetchWritableWallet(walletId);
 
         Transaction transaction = mapper.toEntity(
             data, 
@@ -103,9 +118,10 @@ public class TransactionService {
     }
 
     public TransactionResponseDTO updateTransaction(Long walletId, Long id, @Valid TransactionUpdateDTO data) {
-        fetchOwnedWallet(walletId);
-
+        Wallet wallet = fetchAccessibleWallet(walletId);
         Transaction t = fetchById(walletId, id);
+        checkCanModify(wallet, t);
+
         mapper.updateEntity(t, data, keepOrFetchCategory(t, walletId, data.categoryId(), data.type()));
         
         return mapper.toResponse(repo.save(t));
@@ -113,10 +129,10 @@ public class TransactionService {
 
     @Transactional
     public void removeTransaction(Long walletId, Long id) {
-        fetchOwnedWallet(walletId);
-        if (repo.deactivateByWalletIdAndId(walletId, id) == 0) {
-            throw new ResourceNotFoundException("Transação não encontrada");
-        }
+        Wallet wallet = fetchAccessibleWallet(walletId);
+        checkCanModify(wallet, fetchById(walletId, id));
+
+        repo.deactivateByWalletIdAndId(walletId, id);
     }
 
 }

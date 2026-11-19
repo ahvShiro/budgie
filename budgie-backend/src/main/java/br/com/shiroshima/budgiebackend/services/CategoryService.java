@@ -2,6 +2,7 @@ package br.com.shiroshima.budgiebackend.services;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,6 +15,7 @@ import br.com.shiroshima.budgiebackend.mappers.CategoryMapper;
 import br.com.shiroshima.budgiebackend.models.Category;
 import br.com.shiroshima.budgiebackend.models.Wallet;
 import br.com.shiroshima.budgiebackend.models.enums.TransactionType;
+import br.com.shiroshima.budgiebackend.models.enums.WalletRole;
 import br.com.shiroshima.budgiebackend.repositories.CategoryRepository;
 import br.com.shiroshima.budgiebackend.repositories.TransactionRepository;
 import jakarta.validation.Valid;
@@ -52,6 +54,14 @@ public class CategoryService {
         return wallet;
     }
 
+    private Wallet fetchWritableWallet(Long walletId) {
+        Wallet wallet = walletService.fetchById(walletId);
+        if (walletService.fetchRole(wallet) == WalletRole.VIEWER) {
+            throw new AccessDeniedException("Leitores não podem criar categorias");
+        }
+        return wallet;
+    }
+
     private Wallet fetchOwnedWallet(Long walletId) {
         Wallet wallet = walletService.fetchById(walletId);
         walletService.checkOwner(wallet);
@@ -61,7 +71,7 @@ public class CategoryService {
     // Métodos externos
 
     public CategoryResponseDTO registerCategory(Long walletId, @Valid CategoryRegisterDTO data) {
-        Category newCategory = mapper.toEntity(data, fetchAccessibleWallet(walletId));
+        Category newCategory = mapper.toEntity(data, fetchWritableWallet(walletId));
         repo.save(newCategory);
         return mapper.toResponse(newCategory);
     }
@@ -76,7 +86,7 @@ public class CategoryService {
     }
 
     public CategoryResponseDTO updateCategory(Long walletId, Long id, @Valid CategoryUpdateDTO data) {
-        fetchAccessibleWallet(walletId);
+        fetchOwnedWallet(walletId);
         Category old = fetchById(walletId, id);
 
         if (old.getTransactionType() != data.transactionType() && transactionRepo.existsByCategoryIdAndActive(old.getId(), true)) {
