@@ -27,6 +27,7 @@ import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
 import { DeleteTransactionDialog } from '@/components/transaction/DeleteTransactionDialog.tsx';
 import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
 import { useCurrentUser } from '@/hooks/useCurrentUser.ts';
+import { MemberAvatars } from '@/components/MemberAvatars.tsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ChevronLeft,
@@ -218,9 +219,17 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
             <h1 className="flex flex-col gap-1 text-3xl font-extrabold">
               {walletInfo ? walletInfo.name : <Skeleton className="h-9 w-64" />}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Transações realizadas na carteira
-            </p>
+            {walletInfo ? (
+              <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                <MemberAvatars members={walletInfo.members} />
+                <span>
+                  {walletInfo.members.length}{' '}
+                  {walletInfo.members.length === 1 ? 'membro' : 'membros'}
+                </span>
+              </div>
+            ) : (
+              <Skeleton className="mt-2 h-6 w-32" />
+            )}
           </div>
 
           <div className="flex flex-wrap items-start gap-2">
