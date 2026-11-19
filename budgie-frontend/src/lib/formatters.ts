@@ -4,23 +4,26 @@ const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   currency: 'BRL',
 });
 
-const shortDateFormatter = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: '2-digit',
-});
-
 const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
 });
 
+const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 export function formatCurrency(value: number) {
   return currencyFormatter.format(value);
 }
 
-export function formatShortDate(date: string) {
-  return shortDateFormatter.format(new Date(date));
+export function formatDateTime(date: string) {
+  return dateTimeFormatter.format(new Date(date));
 }
 
 export function formatDate(date: Date) {

@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatCurrency, formatMonth, formatShortDate } from '@/lib/formatters';
+import { formatCurrency, formatMonth, formatDateTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import WalletService from '@/services/WalletService';
 import type {
@@ -291,7 +291,7 @@ export const Dashboard = () => {
                       )}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {formatShortDate(transaction.date)}
+                      {formatDateTime(transaction.date)}
                     </TableCell>
                     <TableCell
                       className={cn(
