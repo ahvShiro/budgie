@@ -24,6 +24,7 @@ import { CategoryDot } from '@/components/category/CategoryCombobox.tsx';
 import { TransactionFormDialog } from '@/components/transaction/TransactionFormDialog.tsx';
 import { WalletFormDialog } from '@/components/wallet/WalletFormDialog.tsx';
 import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
+import { LeaveWalletDialog } from '@/components/wallet/LeaveWalletDialog.tsx';
 import { DeleteTransactionDialog } from '@/components/transaction/DeleteTransactionDialog.tsx';
 import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
 import { useCurrentUser } from '@/hooks/useCurrentUser.ts';
@@ -37,6 +38,7 @@ import {
   Pencil,
   Plus,
   Share2,
+  LogOut,
   Trash2,
 } from 'lucide-react';
 import { toastApiError } from '@/lib/apiErrors.ts';
@@ -108,6 +110,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
   const [isWalletEditOpen, setIsWalletEditOpen] = useState(false);
   const [isWalletShareOpen, setIsWalletShareOpen] = useState(false);
   const [isWalletDeleteOpen, setIsWalletDeleteOpen] = useState(false);
+  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
 
   const user = useCurrentUser();
   const isOwner = !!user && walletInfo?.ownerId === user.id;
@@ -270,6 +273,17 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
                   <Trash2 /> <span className="hidden lg:inline">Deletar</span>
                 </Button>
               </>
+            )}
+
+            {walletInfo && !isOwner && (
+              <Button
+                variant="outline"
+                aria-label="Sair da carteira"
+                onClick={() => setIsLeaveOpen(true)}
+              >
+                <LogOut />{' '}
+                <span className="hidden lg:inline">Sair da carteira</span>
+              </Button>
             )}
 
             {canCreate && (
@@ -488,6 +502,15 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
         onOpenChange={setIsWalletShareOpen}
         onChanged={reloadWallet}
       />
+
+      {user && (
+        <LeaveWalletDialog
+          wallet={isLeaveOpen ? walletInfo : null}
+          userId={user.id}
+          onOpenChange={setIsLeaveOpen}
+          onLeft={() => navigate('/app/dashboard', { replace: true })}
+        />
+      )}
 
       <DeleteWalletDialog
         wallet={isWalletDeleteOpen ? walletInfo : null}

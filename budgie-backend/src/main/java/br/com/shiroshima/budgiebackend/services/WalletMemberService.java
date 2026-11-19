@@ -103,7 +103,12 @@ public class WalletMemberService {
 
     public void removeMember(Long walletId, Long userId) {
         Wallet wallet = walletService.fetchById(walletId);
-        walletService.checkOwner(wallet);
+
+        // Dono remove qualquer um, membro só remove a si mesmo (sair da carteira)
+        boolean isLeaving = userId.equals(userService.fetchAuthenticatedUser().getId());
+        if (!isLeaving) {
+            walletService.checkOwner(wallet);
+        }
 
         // Mesmo softlock do updateMemberRole, sem dono ninguém administra a carteira
         if (userId.equals(wallet.getOwner().getId())) {
