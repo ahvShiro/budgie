@@ -45,7 +45,7 @@ public class WalletController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WalletResponseDTO> getWallet(@PathVariable Long id) {
+    public ResponseEntity<WalletListingDTO> getWallet(@PathVariable Long id) {
         return ResponseEntity.ok(service.getWallet(id));
     }
 

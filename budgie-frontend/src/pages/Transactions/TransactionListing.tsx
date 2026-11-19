@@ -40,7 +40,7 @@ import type {
   ApiPageDTO,
   ApiErrorMessage,
   ApiTransactionResponseDTO,
-  ApiWalletResponseDTO,
+  ApiWalletListingDTO,
 } from '@/services/types.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -83,7 +83,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
     useState<ApiPageDTO<ApiTransactionResponseDTO> | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
   const [categories, setCategories] = useState<ApiCategoryResponseDTO[]>([]);
-  const [walletInfo, setWalletInfo] = useState<ApiWalletResponseDTO | null>(
+  const [walletInfo, setWalletInfo] = useState<ApiWalletListingDTO | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(true);
@@ -142,18 +142,6 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
 
     loadOnChange();
   }, [pageNumber, loadTransactions]);
-
-  // useEffect(() => {
-  //   const loadCategories = async () => {
-  //     try {
-  //       setCategories(await CategoryService.getCategories(walletId));
-  //     } catch (err) {
-  //       handleLoadError(err);
-  //     }
-  //   };
-  //
-  //   loadCategories();
-  // }, [walletId, handleLoadError]);
 
   useEffect(() => {
     const loadWalletData = async () => {

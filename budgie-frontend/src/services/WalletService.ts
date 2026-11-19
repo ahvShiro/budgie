@@ -21,7 +21,7 @@ class WalletService {
   }
 
   async getWallet(id: number) {
-    const response = await api.get<ApiWalletResponseDTO>(
+    const response = await api.get<ApiWalletListingDTO>(
       `${this.endpoint}/${id}`
     );
     return response.data;

@@ -42,15 +42,25 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             Pageable pageable);
 
     @Query("""
-            SELECT t.wallet.id AS walletId,
-                   SUM(CASE WHEN t.type = br.com.shiroshima.budgiebackend.models.enums.TransactionType.INCOME
-                            THEN t.value ELSE -t.value END) AS balance
+            SELECT new br.com.shiroshima.budgiebackend.repositories.projections.WalletBalance(
+                       t.wallet.id,
+                       SUM(CASE WHEN t.type = br.com.shiroshima.budgiebackend.models.enums.TransactionType.INCOME
+                                THEN t.value ELSE -t.value END),
+                       SUM(CASE WHEN t.type = br.com.shiroshima.budgiebackend.models.enums.TransactionType.INCOME
+                                 AND t.date >= :monthStart AND t.date < :monthEnd
+                                THEN t.value ELSE 0 END),
+                       SUM(CASE WHEN t.type = br.com.shiroshima.budgiebackend.models.enums.TransactionType.EXPENSE
+                                 AND t.date >= :monthStart AND t.date < :monthEnd
+                                THEN t.value ELSE 0 END))
             FROM Transaction t
             WHERE t.wallet.id IN :walletIds
               AND t.active = true
             GROUP BY t.wallet.id
             """)
-    List<WalletBalance> sumBalanceByWalletIds(@Param("walletIds") List<Long> walletIds);
+    List<WalletBalance> sumBalanceByWalletIds(
+            @Param("walletIds") List<Long> walletIds,
+            @Param("monthStart") LocalDateTime monthStart,
+            @Param("monthEnd") LocalDateTime monthEnd);
 
     @EntityGraph(attributePaths = { "category", "wallet" })
     List<Transaction> findTop10ByWalletIdInAndActiveOrderByDateDescCreatedAtDesc(List<Long> walletIds, Boolean active);

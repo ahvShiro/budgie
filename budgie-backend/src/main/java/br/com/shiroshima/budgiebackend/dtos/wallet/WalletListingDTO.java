@@ -15,5 +15,9 @@ public record WalletListingDTO(
 
     List<String> members,
 
-    BigDecimal balance
+    BigDecimal balance,
+
+    BigDecimal monthIncome,
+
+    BigDecimal monthExpense
 ) {}

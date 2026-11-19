@@ -1,8 +1,10 @@
 package br.com.shiroshima.budgiebackend.services;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -110,9 +112,7 @@ public class WalletService {
         return mapper.toResponse(newWallet);
     }
 
-    public List<WalletListingDTO> getWallets() {
-        List<Wallet> wallets = fetchUserWallets();
-
+    private List<WalletListingDTO> toListings(List<Wallet> wallets) {
         if (wallets.isEmpty()) {
             return List.of();
         }
@@ -126,17 +126,24 @@ public class WalletService {
             Collectors.mapping(member -> member.getUser().getName(), Collectors.toList())
         ));
 
-        Map<Long, BigDecimal> balanceByWallet = transactionRepo.sumBalanceByWalletIds(walletIds)
+        LocalDateTime monthStart = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime monthEnd = monthStart.plusMonths(1);
+
+        Map<Long, WalletBalance> totalsByWallet = transactionRepo.sumBalanceByWalletIds(walletIds, monthStart, monthEnd)
         .stream()
-        .collect(Collectors.toMap(WalletBalance::getWalletId, WalletBalance::getBalance));
+        .collect(Collectors.toMap(WalletBalance::walletId, Function.identity()));
 
         return wallets.stream()
         .map(wallet -> mapper.toListing(
             wallet,
             membersByWallet.getOrDefault(wallet.getId(), List.of()),
-            balanceByWallet.getOrDefault(wallet.getId(), BigDecimal.ZERO)
+            totalsByWallet.getOrDefault(wallet.getId(), WalletBalance.empty(wallet.getId()))
         ))
         .toList();
+    }
+
+    public List<WalletListingDTO> getWallets() {
+        return toListings(fetchUserWallets());
     }
 
     public List<RecentTransactionDTO> getRecentTransactions() {
@@ -152,10 +159,10 @@ public class WalletService {
         .toList();
     }
 
-    public WalletResponseDTO getWallet(Long id) {
+    public WalletListingDTO getWallet(Long id) {
         Wallet wallet = fetchById(id);
         checkAccess(wallet);
-        return mapper.toResponse(wallet);
+        return toListings(List.of(wallet)).getFirst();
     }
 
     public WalletResponseDTO updateWallet(Long id, @Valid WalletUpdateDTO data) {
