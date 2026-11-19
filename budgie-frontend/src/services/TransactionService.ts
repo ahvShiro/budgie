@@ -39,6 +39,10 @@ class TransactionService {
     );
     return response.data;
   }
+
+  async deleteTransaction(walletId: number, id: number) {
+    await api.delete(`${this.endpoint(walletId)}/${id}`);
+  }
 }
 
 export default new TransactionService();

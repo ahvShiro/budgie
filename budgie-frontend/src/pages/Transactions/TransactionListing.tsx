@@ -24,6 +24,7 @@ import { CategoryDot } from '@/components/category/CategoryCombobox.tsx';
 import { TransactionFormDialog } from '@/components/transaction/TransactionFormDialog.tsx';
 import { WalletFormDialog } from '@/components/wallet/WalletFormDialog.tsx';
 import { DeleteWalletDialog } from '@/components/wallet/DeleteWalletDialog.tsx';
+import { DeleteTransactionDialog } from '@/components/transaction/DeleteTransactionDialog.tsx';
 import { ShareWalletDialog } from '@/components/wallet/ShareWalletDialog.tsx';
 import { useCurrentUser } from '@/hooks/useCurrentUser.ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -37,7 +38,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { toastApiError } from '@/lib/apiErrors.ts';
-import { formatCurrency, formatShortDate } from '@/lib/formatters.ts';
+import { formatCurrency, formatDateTime } from '@/lib/formatters.ts';
 import { cn } from '@/lib/utils.ts';
 import TransactionService from '@/services/TransactionService.ts';
 import CategoryService from '@/services/CategoryService.ts';
@@ -96,7 +97,8 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [transactionToEdit, setTransactionToEdit] =
     useState<ApiTransactionResponseDTO | null>(null);
-  // const [transactionToDelete, setTransactionToDelete] = useState();
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<ApiTransactionResponseDTO | null>(null);
   const [isWalletEditOpen, setIsWalletEditOpen] = useState(false);
   const [isWalletShareOpen, setIsWalletShareOpen] = useState(false);
   const [isWalletDeleteOpen, setIsWalletDeleteOpen] = useState(false);
@@ -190,6 +192,14 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
     loadTransactions(pageNumber);
   };
 
+  const handleTransactionDeleted = () => {
+    if (rows.length === 1 && pageNumber > 0) {
+      setPageNumber((p) => p - 1);
+    } else {
+      loadTransactions(pageNumber);
+    }
+  };
+
   const reloadWallet = async () => {
     try {
       setWalletInfo(await WalletService.getWallet(walletId));
@@ -247,7 +257,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-24">Data</TableHead>
+                <TableHead className="w-40">Data</TableHead>
                 <TableHead>Descrição</TableHead>
                 <TableHead className="w-40">Categoria</TableHead>
                 <TableHead className="w-24">Tipo</TableHead>
@@ -268,7 +278,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
               {!isLoading &&
                 rows.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell>{formatShortDate(transaction.date)}</TableCell>
+                    <TableCell>{formatDateTime(transaction.date)}</TableCell>
                     <TableCell className="font-medium">
                       {transaction.description || '-'}
                     </TableCell>
@@ -311,6 +321,16 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
                           >
                             <Pencil /> Editar
                           </DropdownMenuItem>
+                          {isOwner && (
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onSelect={() =>
+                                setTransactionToDelete(transaction)
+                              }
+                            >
+                              <Trash2 /> Deletar
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -388,7 +408,7 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
       />
 
       <WalletFormDialog
-        key={isWalletEditOpen ? walletInfo?.id : 'fechado'}
+        key={isWalletEditOpen ? `carteira-${walletInfo?.id}` : 'carteira-fechado'}
         open={isWalletEditOpen}
         wallet={walletInfo}
         onOpenChange={setIsWalletEditOpen}
@@ -405,6 +425,13 @@ const WalletTransactions = ({ walletId }: WalletTransactionsProps) => {
         wallet={isWalletDeleteOpen ? walletInfo : null}
         onOpenChange={setIsWalletDeleteOpen}
         onDeleted={() => navigate('/app/dashboard', { replace: true })}
+      />
+
+      <DeleteTransactionDialog
+        walletId={walletId}
+        transaction={transactionToDelete}
+        onOpenChange={(open) => !open && setTransactionToDelete(null)}
+        onDeleted={handleTransactionDeleted}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import br.com.shiroshima.budgiebackend.dtos.transaction.TransactionRegisterDTO;
@@ -110,6 +111,7 @@ public class TransactionService {
         return mapper.toResponse(repo.save(t));
     }
 
+    @Transactional
     public void removeTransaction(Long walletId, Long id) {
         fetchOwnedWallet(walletId);
         if (repo.deactivateByWalletIdAndId(walletId, id) == 0) {
